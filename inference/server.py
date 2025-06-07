@@ -1,44 +1,68 @@
-
+import logging
+import sys
 import grpc 
-from concurrent import futures
-import onnxruntime as ort 
-from transformers import AutoTokenizer
-import numpy as np
 import embed_pb2, embed_pb2_grpc 
+import json
+
+from concurrent import futures
+from internal.colbert.embedder import Embedder
+from internal.db.database import Database
+from internal.parser.parse import Parse
 
 
-class ColBERTEmbedder(embed_pb2_grpc.EmbedderServicer):
-    def __init__(self, model_path: str, tokenizer_name: str):
-        self.session = ort.InferenceSession(model_path, providers=["CPUExecutionProvider"])
-        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
 
-    def Embed(self, request, context):
-        # Tokenize input
-        tokens = self.tokenizer(
-            request.text,
-            return_tensors="np",
-            padding="max_length",
-            truncation=True,
-            max_length=128,
+logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
         )
 
-        # ONNX expects inputs as dict of numpy arrays
-        onnx_inputs = {
-            "input_ids": tokens["input_ids"],
-            "attention_mask": tokens["attention_mask"]
-        }
-        outputs = self.session.run(None, onnx_inputs)
+logger = logging.getLogger(__name__)
+
+class ColBERTEmbedder(embed_pb2_grpc.EmbedderServicer):
+    def __init__(self, embedderObject):
+        self.embedder = embedderObject
         
-        # Assume output[0] is the embedding
-        embedding = outputs[0].mean(axis=1).flatten().tolist()  # e.g., [batch, dim] → pooled 
-        return embed_pb2.EmbedResponse(embedding=embedding)
+
+    def Embed(self, request, context):
+        outputs = self.embedder.Embed(request.text)
+        return embed_pb2.EmbedResponse(embedding=outputs)
 
 def serve():
+    # init embedder obj
+    embedder = Embedder("model/model.onnx")
+    
+    # init database
+    db = Database("postgres://admin:password@localhost:9876/documents")
+    if db.ping():
+        logger.info("ping test successfull")
+    else:
+        logger.error("ping test failed, shutting down.")
+        sys.exit(1)
+
+    # init parser
+    parse = Parse(embedder)
+    
+    
+    data, ok = parse.pdf("internal/parser/docs/example_pdf.pdf", "test", "test")
+    if ok:
+        with open("tmp1.json", "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        print("Saved payloads to tmp.json")
+    else:
+        print("Failed to parse PDF.")
+
+
+    
+
+    # workers python threads not true parallel
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=4))
     embed_pb2_grpc.add_EmbedderServicer_to_server(
-        ColBERTEmbedder("model/model.onnx", "bert-base-uncased"),
+        ColBERTEmbedder(embedder),
         server,
     )
+
+
+
     server.add_insecure_port('[::]:50051')
     server.start()
     print("gRPC server started on port 50051.")
