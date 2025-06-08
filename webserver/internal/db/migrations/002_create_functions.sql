@@ -43,6 +43,7 @@ RETURNS BIGINT AS $$
 DECLARE
     new_pdf_id BIGINT;
     chunk JSONB;
+    inserted_chunk_id BIGINT;
 BEGIN
     -- Insert PDF row
     INSERT INTO pdfs (owner, filename)
@@ -55,6 +56,7 @@ BEGIN
     -- Loop over chunks and insert each one
     FOR chunk IN SELECT * FROM jsonb_array_elements(p_data->'chunks')
     LOOP
+        -- Insert into pdf_chunks
         INSERT INTO pdf_chunks (
             pdf_id,
             page_number,
@@ -69,7 +71,14 @@ BEGIN
             chunk->>'content',
             (chunk->>'embedding')::vector,
             (chunk->>'is_table')::BOOLEAN
-        );
+        )
+        RETURNING id INTO inserted_chunk_id;
+
+        -- If chunk is a table and html exists, insert into pdf_table_html
+        IF (chunk->>'is_table')::BOOLEAN AND chunk ? 'html' THEN
+            INSERT INTO pdf_table_html (chunk_id, html)
+            VALUES (inserted_chunk_id, chunk->>'html');
+        END IF;
     END LOOP;
 
     RETURN new_pdf_id;

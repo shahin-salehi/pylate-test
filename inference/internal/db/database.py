@@ -1,6 +1,6 @@
 import psycopg
 import logging
-
+from psycopg.types.json import Json 
 # Configure the logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)  # Change to DEBUG for more verbose output
@@ -28,10 +28,29 @@ class Database:
                 return c.fetchone() is not None
                 
         except Exception as e:
-            logger.warning(f"Database ping caused exception: {e}")
+            logger.error(f"Database ping caused exception: {e}")
             return False
 
-    def insert(self, pdf_chunk):
-        print("implement me please")
+    def insert(self, json_data):
+        try:
+            with self.conn.cursor() as c:
+                c.execute("SELECT insert_pdf_from_json(%s::jsonb)", (Json(json_data),))
+                row = c.fetchone()
+                if row is not None:
+                    pdf_id = row[0]
+                    self.conn.commit()
+                    return pdf_id, True
+                else:
+                    return -1, False # if this happens everyone will be confused
+
+        except Exception as e:
+            logger.error(f"Insert parsed pdf caused exception: {e}")
+            self.conn.rollback()
+            return e, False
+
+
+
+        
+
         
 

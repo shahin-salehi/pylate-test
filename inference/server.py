@@ -43,7 +43,7 @@ def serve():
     parse = Parse(embedder)
     
     
-    data, ok = parse.pdf("internal/parser/docs/example_pdf.pdf", "test", "test")
+    data, ok = parse.pdf("internal/parser/docs/sector_policy_fossil_fuel.pdf", "test", "test")
     if ok:
         with open("tmp1.json", "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
@@ -51,8 +51,15 @@ def serve():
     else:
         print("Failed to parse PDF.")
 
+    ## insert test
+    resp, ok = db.insert(data)
+    if not ok:
+        logger.error("I just shitted my pants, ong")
+        sys.exit(1)
+    else:
+        logger.info(f"pdf inserted id: {resp} ")
 
-    
+
 
     # workers python threads not true parallel
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=4))
