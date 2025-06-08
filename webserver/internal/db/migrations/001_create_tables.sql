@@ -40,3 +40,8 @@ CREATE TABLE IF NOT EXISTS pdf_chunks (
     embedding vector(128) NOT NULL,
     is_table BOOLEAN NOT NULL
 );
+CREATE TABLE IF NOT EXISTS pdf_table_html (
+    chunk_id BIGINT PRIMARY KEY REFERENCES pdf_chunks(id) ON DELETE CASCADE,
+    html TEXT NOT NULL
+);
+
