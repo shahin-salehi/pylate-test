@@ -23,7 +23,6 @@ CREATE TABLE IF NOT EXISTS user_to_group(
     );
 
 -- pdf
-DROP TABLE IF EXISTS pdfs;
 CREATE TABLE IF NOT EXISTS pdfs(
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     owner BIGINT REFERENCES groups(id) ON DELETE CASCADE,
@@ -37,7 +36,7 @@ CREATE TABLE IF NOT EXISTS pdf_chunks (
     page_number INT NOT NULL,
     category TEXT,
     content TEXT NOT NULL,
-    embedding vector(128) NOT NULL,
+    embeddings vector(128)[] NOT NULL,
     is_table BOOLEAN NOT NULL
 );
 CREATE TABLE IF NOT EXISTS pdf_table_html (
