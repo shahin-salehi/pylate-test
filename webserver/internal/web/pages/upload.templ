@@ -1,0 +1,49 @@
+package pages
+
+import "shahin/webserver/internal/web/components"
+templ Upload(){
+    
+<!DOCTYPE html>
+<html lang="en">
+  
+  @components.Head("upload")
+  <body class="bg-gray-50 text-gray-900 font-sans min-h-screen flex flex-col items-center ">
+
+    <!-- Header -->
+    @components.Header()
+    <!-- Upload Section -->
+    <div class="w-full max-w-3xl mt-12">
+      <h1 class="text-3xl font-bold mb-4 text-center">📁 Upload your PDFs</h1>
+
+      <form id="uploadForm" class="bg-white p-6 rounded-xl shadow space-y-4" enctype="multipart/form-data" method="POST" action="/upload">
+        <input type="file" name="file" accept=".pdf" required
+          class="w-full border border-[#003824] rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#003824] transition" />
+        <button type="submit"
+          class="w-full bg-[#003824] hover:bg-[#002b1c] text-white py-3 px-6 rounded-lg transition font-medium">
+          Upload PDF
+        </button>
+      </form>
+
+      <!-- Uploaded Files -->
+      <div id="fileList" class="mt-10">
+        <h2 class="text-xl font-semibold mb-4">Your Uploaded Files</h2>
+        <ul class="space-y-2">
+          <!-- Example file list item -->
+          <li class="bg-white shadow rounded-lg p-4 flex items-center justify-between">
+            <span class="text-gray-800">example.pdf</span>
+            <form method="POST" action="/delete" class="ml-4">
+              <input type="hidden" name="filename" value="example.pdf" />
+              <button type="submit"
+                class="text-sm text-white bg-red-600 hover:bg-red-700 px-3 py-1 rounded transition">
+                Delete
+              </button>
+            </form>
+          </li>
+        </ul>
+      </div>
+    </div>
+  @components.Footer()
+  </body>
+</html>
+    
+}

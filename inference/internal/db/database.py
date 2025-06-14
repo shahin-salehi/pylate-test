@@ -1,3 +1,4 @@
+from typing import Tuple
 import psycopg
 import numpy as np
 import logging
@@ -25,6 +26,7 @@ def make_json_safe(obj):
     elif isinstance(obj, dict):
         return {k: make_json_safe(v) for k, v in obj.items()}
     return obj
+
 
 class Database:
     def __init__(self, connection_string):
@@ -110,24 +112,33 @@ class Database:
             self.conn.rollback()
             return -1, False
             
-
-
-
-
-    def search(self, query: str, embedder: Embedder, top_k: int = 10) -> list[dict]:
+    def search(self, query: str, embedder: Embedder, top_k: int = 10) -> Tuple[list[dict], list]:
         try:
             query_embeddings = embedder.Embed(query)  # Already JSON-safe list of list[float]
 
            
             result = self.conn.execute(
-                'SELECT content, max_sim(embeddings, %s) AS max_sim FROM pdf_chunks ORDER BY max_sim DESC LIMIT 10',
+                    """
+                        SELECT 
+                          pdfs.filename,
+                          pdf_chunks.page_number,
+                          pdf_chunks.category,
+                          pdf_chunks.content,
+                          pdf_table_html.html,
+                          max_sim(embeddings, %s) AS max_sim
+                        FROM pdf_chunks
+                        JOIN pdfs ON pdfs.id = pdf_chunks.pdf_id
+                        LEFT JOIN pdf_table_html ON pdf_table_html.chunk_id = pdf_chunks.id
+                        ORDER BY max_sim DESC
+                        LIMIT 10
+                    """,
                 (query_embeddings,)
             ).fetchall()
 
-            return result 
+            return result, query_embeddings
 
         except Exception as e:
             logger.error(f"Search failed: {e}")
-            return []
+            return [], []
 
 

@@ -1,0 +1,66 @@
+package components
+
+import "shahin/webserver/internal/types"
+templ Head(title string){
+    
+    <head>
+    <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="icon" type="image/svg+xml" href="">
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>{title}</title>
+        <link rel="stylesheet" href="/static/styles.css" />
+    </head>
+}
+
+
+templ Header(){
+    
+<header class="w-full bg-white shadow-md">
+  <div class="max-w-6xl mx-auto flex items-center justify-between h-12 px-4">
+    <!-- Logo + Brand -->
+    <div class="flex items-center gap-2">
+      <img src="/static/seb.svg" alt="Logo" class="w-12 h-12 object-contain" />
+    </div>
+
+    <!-- Navigation Links -->
+    <nav class="flex items-center gap-6 text-gray-700 text-sm font-medium">
+      <a href="/" class="hover:text-blue-600 transition">Home</a>
+      <a href="/data" class="hover:text-blue-600 transition">Data</a>
+      <form action="/logout" method="POST">
+        <button type="submit" class="hover:text-red-500 transition">Logout</button>
+      </form>
+    </nav>
+  </div>
+</header>
+
+}
+
+templ Footer(){
+
+    <footer>
+    <p></p>
+
+    <script src="/static/script.js"></script>
+    </footer>
+}
+
+
+
+// save for highlights but do this in backend and return matched words
+// or at least evaluate that option
+// <span class='bg-yellow-200 px-1'>${query}</span>
+templ Results(matches []types.Match){ 
+    for _, match := range matches{
+       <ul>
+          <div class="bg-white p-4 rounded-xl shadow border">
+            <div class="text-lg font-semibold"> <span class="text-blue-600">{match.Title}</span></div>
+            <p class="text-gray-700 mt-2">
+                <!-- this is a security issue sanitize or change pattern-->
+                @templ.Raw(match.Content)
+            </p>
+            <div class="mt-2 text-sm text-gray-500">page {match.PageNumber} · {match.Category}</div>
+          </div>
+       </ul>
+    }
+}

@@ -1,0 +1,42 @@
+package pages
+
+import "shahin/webserver/internal/web/components"
+
+
+templ Login(){
+    <!DOCTYPE html>
+    <html lang="en">
+    @components.Head("Login | Shahin")
+    <body>
+    @components.Header()
+
+    <section class="">
+    <div class="">
+        <h2>Login</h2>
+        <form action="#" method="POST" class="" data-feedback-id="login-feedback">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required />
+    
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required />
+    
+        <button type="submit">Login</button>
+        <div id="login-feedback"></div>
+        </form>
+
+        <div id="redirect-message" style="margin-top: 1rem; display: none; color: green;"></div>
+        <p class="note">
+        Don't have an account?
+        <a href="/signup">Sign up here</a>.
+        </p>
+
+        
+    </div>
+    </section>
+
+    @components.Footer()
+    </body>
+    </html>
+
+
+}

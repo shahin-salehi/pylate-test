@@ -1,0 +1,18 @@
+
+/* style.css */
+
+
+.results-container {
+  border: 1px solid #e5e7eb;
+  padding: 1rem;
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Just an arbitrary style for demo */
+.highlight {
+  background-color: #fffacc;
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+}

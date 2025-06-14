@@ -1,0 +1,52 @@
+package pages
+
+import "shahin/webserver/internal/web/components"
+
+templ Index() {
+<!DOCTYPE html>
+<html lang="en">
+
+  @components.Head("temp")
+  <body class="bg-gray-50 text-gray-900 font-sans min-h-screen flex flex-col items-center ">
+  @components.Header()
+    <div class="w-full max-w-3xl mt-12 text-center">
+      <h1 class="flex items-center justify-center gap-3 text-4xl font-bold mb-4">
+      Shahin
+       <img src="/static/falcon.svg" alt="Falcon" class="w-10 h-10 object-contain" />
+      <span class="text-xs font-semibold bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full tracking-wide">
+        BETA
+      </span>
+      </h1>
+
+      <p class="text-gray-600 mb-8 italic">made by aiops.</p>
+
+      <form class="flex items-center justify-center gap-2" onsubmit="event.preventDefault(); search();">
+<input
+  id="searchInput"
+  type="text"
+  placeholder="Search for something..."
+  class="w-full px-4 py-3 rounded-xl border shadow-sm focus:outline-none transition"
+  style="border-color: #003824; box-shadow: 0 0 0 2px transparent;"
+  onfocus="this.style.boxShadow='0 0 0 2px rgba(0,56,36,0.4)'"
+/>
+
+<button
+  type="submit"
+  class="px-6 py-3 text-white rounded-xl transition"
+  style="background-color: #003824;"
+  onmouseover="this.style.backgroundColor='#002b1c'"
+  onmouseout="this.style.backgroundColor='#003824'"
+>
+  Search
+</button>
+      </form>
+    </div>
+
+    <div id="results" class="w-full max-w-3xl mt-10 space-y-4">
+      <!-- Search results will be injected here -->
+    </div>
+
+    @components.Footer()
+  </body>
+</html>
+}
