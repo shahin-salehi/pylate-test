@@ -1,0 +1,73 @@
+
+package pages
+
+import "shahin/webserver/internal/types"
+
+templ Reader(instructions types.ViewerInstructions) {
+
+<!DOCTYPE html>
+
+	<html lang="en">
+
+		<head>
+
+			<meta charset="UTF-8"/>
+
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+			<title>Document</title>
+
+			<style>
+
+                body {
+
+                background-color: #808080;
+
+                margin: 0;
+
+                padding: 0;
+
+                }
+
+                #viewerContainer {
+
+                overflow: auto;
+
+                position: absolute;
+
+                width: 100%;
+
+                height: 100%;
+
+                }
+
+            </style>
+
+			<link rel="stylesheet" href="/public/node_modules/pdfjs-dist/web/pdf_viewer.css"/>
+
+			<!-- pass arguments from server store it in data -->
+
+			<div id="viewer-instructions" data={ templ.JSONString(instructions) }></div>
+
+			<script src="/public/node_modules/pdfjs-dist/build/pdf.mjs" type="module"></script>
+
+			<script src="/public/node_modules/pdfjs-dist/web/pdf_viewer.mjs" type="module"></script>
+
+		</head>
+
+		<body tabindex="1">
+
+			<div id="viewerContainer">
+
+				<div id="viewer" class="pdfViewer"></div>
+
+			</div>
+
+			<script src="/static/pdfRender.mjs" type="module"></script>
+
+		</body>
+
+	</html>
+
+    
+}

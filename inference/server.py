@@ -22,8 +22,9 @@ logger = logging.getLogger(__name__)
 nlp = spacy.load("en_core_web_sm")
 
 
-def highlight(paragraph: str, words: list[str]) -> str:
+def highlight(paragraph: str, words: list[str]):  
     done = []
+    searchTerm = ""
     original_paragraph = paragraph  # Keep the original for reference
     highlighted = original_paragraph  # Start with the original paragraph
     
@@ -41,6 +42,14 @@ def highlight(paragraph: str, words: list[str]) -> str:
                 (i == 0 or not highlighted[i-1].isalpha()) and 
                 (i+len(word) >= len(highlighted) or not highlighted[i+len(word)].isalpha())):
                 
+                # create search term
+                # total hack
+                if searchTerm == "":
+                        searchTerm = original_paragraph[:50]
+
+                
+
+
                 # Wrap the match in span tags
                 highlighted = (
                     highlighted[:i] +
@@ -56,7 +65,7 @@ def highlight(paragraph: str, words: list[str]) -> str:
                 
         done.append(word)
     
-    return highlighted
+    return highlighted, searchTerm
 
 
 
@@ -78,7 +87,7 @@ class ColBERTEmbedder(embed_pb2_grpc.EmbedderServicer):
             top_indicies = self.embedder.match(query_embeddings, doc_embeds)
             top_words = [doc_tokens[i] for i in top_indicies]
             #print("top words:", top_words)
-            out = highlight(row[3], top_words)
+            out, st = highlight(row[3], top_words)
             title = f"{row[2]}: {row[0]}"
             matches.append(embed_pb2.Match(
                 filename=row[0],
@@ -88,6 +97,7 @@ class ColBERTEmbedder(embed_pb2_grpc.EmbedderServicer):
                 content= out,
                 html=row[4] or "",
                 score=row[5],
+                meta=st,
                 ))
 
         return embed_pb2.EmbedResponse(result=matches)
@@ -108,6 +118,7 @@ def serve():
     parse = Parse(embedder)
 
     
+    """
     ## parse test
     data, ok = parse.pdf("internal/parser/docs/Environmental_policy_2025_adopted.pdf", "environmental")
     if ok:
@@ -124,6 +135,7 @@ def serve():
         sys.exit(1)
     else:
         logger.info(f"pdf inserted id: {resp} ")
+    """
     
 
     # workers python threads not true parallel

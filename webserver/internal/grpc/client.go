@@ -46,6 +46,7 @@ func (c *Client) Search(query string) ([]types.Match, error){
 			Content: m.Content,
 			HTML: m.Html,
 			Score: m.Score,
+			Meta: m.Meta,
 		}
 	}
 

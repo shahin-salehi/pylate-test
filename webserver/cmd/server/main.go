@@ -43,7 +43,9 @@ func main(){
 	mux := http.NewServeMux()
 	// serve static files
 	fs := http.FileServer(http.Dir("../../static"))
+	fsPublic := http.FileServer(http.Dir("../../public"))
 	mux.Handle("/static/", http.StripPrefix("/static/", fs))
+	mux.Handle("/public/", http.StripPrefix("/public/", fsPublic))
 	//pages
 	mux.Handle("/", templ.Handler(pages.Index()))
 	mux.Handle("/data", templ.Handler(pages.Upload()))
@@ -51,6 +53,7 @@ func main(){
 
 	// handlers
 	mux.HandleFunc("/query", handler.Search)
+	mux.HandleFunc("/view", handler.View)
 
 	http.ListenAndServe(":8080", mux)
 

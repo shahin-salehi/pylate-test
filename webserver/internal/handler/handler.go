@@ -4,7 +4,9 @@ import (
 	"log/slog"
 	"net/http"
 	"shahin/webserver/internal/grpc"
+	"shahin/webserver/internal/types"
 	"shahin/webserver/internal/web/components"
+	"shahin/webserver/internal/web/pages"
 )
 
 
@@ -41,4 +43,22 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request)  {
 	components.Results(matches).Render(r.Context(), w)
 }
 	
+func (h *Handler) View(w http.ResponseWriter, r *http.Request){
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	filename := r.FormValue("filename") 
+	search := r.FormValue("search")
+
+
+	instruct := types.ViewerInstructions{
+		Path: filename,
+		Highlight: search,
+	}
+
+	pages.Reader(instruct).Render(r.Context(), w)
+	
+}
 

@@ -1,6 +1,7 @@
 package components
 
 import "shahin/webserver/internal/types"
+import "net/url" 
 templ Head(title string){
     
     <head>
@@ -50,17 +51,38 @@ templ Footer(){
 // save for highlights but do this in backend and return matched words
 // or at least evaluate that option
 // <span class='bg-yellow-200 px-1'>${query}</span>
-templ Results(matches []types.Match){ 
-    for _, match := range matches{
-       <ul>
-          <div class="bg-white p-4 rounded-xl shadow border">
-            <div class="text-lg font-semibold"> <span class="text-blue-600">{match.Title}</span></div>
-            <p class="text-gray-700 mt-2">
-                <!-- this is a security issue sanitize or change pattern-->
-                @templ.Raw(match.Content)
-            </p>
-            <div class="mt-2 text-sm text-gray-500">page {match.PageNumber} · {match.Category}</div>
-          </div>
-       </ul>
+templ Results(matches []types.Match){
+    for _, match := range matches {
+        <ul>
+            <div class="bg-white p-4 rounded-xl shadow border">
+                <div class="flex justify-between items-center">
+                    <div class="text-lg font-semibold">
+                        <a 
+                            class="text-blue-600 hover:underline"
+                            href={"/view?filename=" + url.QueryEscape(match.Filename) + "&search=" + url.QueryEscape(match.Meta)}
+                        >
+                            {match.Title}
+                        </a>
+                    </div>
+                    <a 
+                        href={"/static/" + url.QueryEscape(match.Filename)}
+                        title="Download or view file"
+                        class="text-gray-500 hover:text-gray-800"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        📄
+                    </a>
+                </div>
+                <p class="text-gray-700 mt-2">
+                if match.HTML != ""{
+                    @templ.Raw(match.HTML)
+                } else {
+                    @templ.Raw(match.Content)
+                }
+                </p>
+                <div class="mt-2 text-sm text-gray-500">page {match.PageNumber} · {match.Category}</div>
+            </div>
+        </ul>
     }
 }

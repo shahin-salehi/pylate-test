@@ -12,3 +12,7 @@ type Match struct {
 	Meta string
 }
 
+type ViewerInstructions struct {
+	Path string `json:"path"`
+	Highlight string `json:"highlight"`
+}
