@@ -14,7 +14,7 @@ var createTables string
 //go:embed migrations/002_create_functions.sql
 var createFunctions string
 
-func NewDatabase(connectionSting string) (*pgxpool.Pool, error){
+func NewDatabase(connectionSting string) (*crud, error){
 	pool, err := pgxpool.New(context.Background(), connectionSting)
 	if err != nil {
 		slog.Error("failed to connect to database", slog.Any("error", err))
@@ -32,5 +32,6 @@ func NewDatabase(connectionSting string) (*pgxpool.Pool, error){
 		slog.Error("failed to create functions", slog.Any("error", err))
 		return nil, err
 	}
-	return pool, nil
+	
+	return &crud{Conn: pool}, err
 }

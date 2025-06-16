@@ -17,7 +17,7 @@ func main(){
 	
 	// set this in deployment 
 	connectionString := "postgres://admin:password@localhost:9876/documents"   //:= os.Getenv("DATABASE_URL")
-	_, err := db.NewDatabase(connectionString)
+	pool, err := db.NewDatabase(connectionString)
 	
 	if err != nil {
 		slog.Error("db init returned error in main, shutting down.", slog.Any("error", err))
@@ -33,8 +33,10 @@ func main(){
 	defer client.Close()
 
 
+	defer pool.Conn.Close()
+
 	//init handler 
-	handler, err := handler.New(client)
+	handler, err := handler.New(client, pool)
 	if err != nil{
 		slog.Error("init handler returned error", slog.Any("error", err))
 		os.Exit(1)
@@ -48,12 +50,13 @@ func main(){
 	mux.Handle("/public/", http.StripPrefix("/public/", fsPublic))
 	//pages
 	mux.Handle("/", templ.Handler(pages.Index()))
-	mux.Handle("/data", templ.Handler(pages.Upload()))
 	mux.Handle("/login", templ.Handler(pages.Login()))
 
 	// handlers
 	mux.HandleFunc("/query", handler.Search)
 	mux.HandleFunc("/view", handler.View)
+	mux.HandleFunc("/data", handler.Files)
+	
 
 	http.ListenAndServe(":8080", mux)
 

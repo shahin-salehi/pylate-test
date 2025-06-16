@@ -24,9 +24,10 @@ nlp = spacy.load("en_core_web_sm")
 
 def highlight(paragraph: str, words: list[str]):  
     done = []
-    searchTerm = ""
     original_paragraph = paragraph  # Keep the original for reference
     highlighted = original_paragraph  # Start with the original paragraph
+    # total hack
+    searchTerm = original_paragraph[:50]
     
     #filter
     words = [word for word in words if not nlp.vocab[word].is_stop]
@@ -42,10 +43,7 @@ def highlight(paragraph: str, words: list[str]):
                 (i == 0 or not highlighted[i-1].isalpha()) and 
                 (i+len(word) >= len(highlighted) or not highlighted[i+len(word)].isalpha())):
                 
-                # create search term
-                # total hack
-                if searchTerm == "":
-                        searchTerm = original_paragraph[:50]
+
 
                 
 
@@ -120,7 +118,7 @@ def serve():
     
     """
     ## parse test
-    data, ok = parse.pdf("internal/parser/docs/Environmental_policy_2025_adopted.pdf", "environmental")
+    data, ok = parse.pdf("internal/parser/docs/Q125_Quarterly_report.pdf", "reports")
     if ok:
         logger.info("pdf parsed succesfully.")
     else:
@@ -135,9 +133,9 @@ def serve():
         sys.exit(1)
     else:
         logger.info(f"pdf inserted id: {resp} ")
-    """
     
 
+    """
     # workers python threads not true parallel
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=4))
     embed_pb2_grpc.add_EmbedderServicer_to_server(

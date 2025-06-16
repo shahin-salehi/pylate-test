@@ -1,5 +1,7 @@
 package types
 
+import "time"
+
 
 type Match struct {
 	Filename string
@@ -15,4 +17,10 @@ type Match struct {
 type ViewerInstructions struct {
 	Path string `json:"path"`
 	Highlight string `json:"highlight"`
+}
+
+type File struct{
+	PdfID int64 `json:"pdfID" db:"pdf_id"`
+	Filename string `json:"filename"`
+	UploadedAt time.Time `json:"uploaded_at" db:"uploaded_at"`
 }

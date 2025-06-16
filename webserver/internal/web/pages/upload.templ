@@ -1,8 +1,8 @@
 package pages
 
 import "shahin/webserver/internal/web/components"
-templ Upload(){
-    
+import "shahin/webserver/internal/types"
+templ Upload(files []types.File){
 <!DOCTYPE html>
 <html lang="en">
   
@@ -27,19 +27,8 @@ templ Upload(){
       <!-- Uploaded Files -->
       <div id="fileList" class="mt-10">
         <h2 class="text-xl font-semibold mb-4">Your Uploaded Files</h2>
-        <ul class="space-y-2">
-          <!-- Example file list item -->
-          <li class="bg-white shadow rounded-lg p-4 flex items-center justify-between">
-            <span class="text-gray-800">example.pdf</span>
-            <form method="POST" action="/delete" class="ml-4">
-              <input type="hidden" name="filename" value="example.pdf" />
-              <button type="submit"
-                class="text-sm text-white bg-red-600 hover:bg-red-700 px-3 py-1 rounded transition">
-                Delete
-              </button>
-            </form>
-          </li>
-        </ul>
+        @components.Files(files)
+
       </div>
     </div>
   @components.Footer()

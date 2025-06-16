@@ -3,6 +3,7 @@ package handler
 import (
 	"log/slog"
 	"net/http"
+	"shahin/webserver/internal/db"
 	"shahin/webserver/internal/grpc"
 	"shahin/webserver/internal/types"
 	"shahin/webserver/internal/web/components"
@@ -12,10 +13,11 @@ import (
 
 type Handler struct{
 	KooroshClient *koorosh.Client
+	db db.Crud
 }
 
-func New(client *koorosh.Client)(*Handler,error){
-	return &Handler{KooroshClient: client}, nil
+func New(client *koorosh.Client, db db.Crud)(*Handler,error){
+	return &Handler{KooroshClient: client, db: db}, nil
 }
 
 // we need to return html here 
@@ -61,4 +63,20 @@ func (h *Handler) View(w http.ResponseWriter, r *http.Request){
 	pages.Reader(instruct).Render(r.Context(), w)
 	
 }
+
+
+func (h *Handler) Files(w http.ResponseWriter, r *http.Request){
+	
+	// get user Files
+	files, err := h.db.ReadFiles(r.Context())
+	if err != nil{
+		slog.Error("db failed to read files")
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	
+	pages.Upload(files).Render(r.Context(), w)
+	
+}
+
 

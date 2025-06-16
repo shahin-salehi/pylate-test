@@ -16,6 +16,47 @@ CREATE OR REPLACE FUNCTION max_sim(document vector[], query vector[]) RETURNS do
         SELECT MAX(similarity) AS max_similarity FROM similarities GROUP BY query_number
     )
     SELECT SUM(max_similarity) FROM max_similarities
-$$ LANGUAGE SQL
+$$ LANGUAGE SQL;
 
 
+
+
+
+
+
+
+
+
+-------------- read_files
+
+
+CREATE OR REPLACE FUNCTION read_files(
+    user_email TEXT,
+    selected_group_id BIGINT
+)
+RETURNS TABLE(
+    pdf_id BIGINT,
+    filename TEXT,
+    uploaded_at TIMESTAMPTZ
+) AS $$
+
+
+BEGIN
+    -- Check if the user is a member of the selected group
+    IF NOT EXISTS (
+        SELECT 1
+        FROM users u
+        JOIN user_to_group ug ON ug.user_id = u.id
+        WHERE u.email = user_email AND ug.group_id = selected_group_id
+    ) THEN
+        RAISE EXCEPTION 'User with email % does not belong to group %', user_email, selected_group_id;
+    END IF;
+
+    -- Return PDFs owned by the selected group
+    RETURN QUERY
+    SELECT p.id, p.filename, p.uploaded_at
+    FROM pdfs p
+    WHERE p.owner = selected_group_id
+    ORDER BY p.uploaded_at DESC;
+END;
+$$ LANGUAGE plpgsql;
