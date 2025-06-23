@@ -21,24 +21,36 @@ templ Index() {
       <p class="text-gray-600 mb-8 italic">made by aiops.</p>
 
       <form class="flex items-center justify-center gap-2" onsubmit="event.preventDefault(); search();">
-<input
-  id="searchInput"
-  type="text"
-  placeholder="Search for something..."
-  class="w-full px-4 py-3 rounded-xl border shadow-sm focus:outline-none transition"
-  style="border-color: #003824; box-shadow: 0 0 0 2px transparent;"
-  onfocus="this.style.boxShadow='0 0 0 2px rgba(0,56,36,0.4)'"
-/>
+        <select
+            id="categorySelect"
+            class="px-4 py-3 rounded-xl border shadow-sm focus:outline-none transition"
+            style="border-color: #003824; box-shadow: 0 0 0 2px transparent;"
+            onfocus="this.style.boxShadow='0 0 0 2px rgba(0,56,36,0.4)'"
+          >
+            <option value="">All Categories</option>
+            <option value="books">Books</option>
+            <option value="articles">Articles</option>
+            <option value="videos">Videos</option>
+            <option value="tools">Tools</option>
+        </select>
+        <input
+          id="searchInput"
+          type="text"
+          placeholder="Search for something..."
+          class="w-full px-4 py-3 rounded-xl border shadow-sm focus:outline-none transition"
+          style="border-color: #003824; box-shadow: 0 0 0 2px transparent;"
+          onfocus="this.style.boxShadow='0 0 0 2px rgba(0,56,36,0.4)'"
+        />
 
-<button
-  type="submit"
-  class="px-6 py-3 text-white rounded-xl transition"
-  style="background-color: #003824;"
-  onmouseover="this.style.backgroundColor='#002b1c'"
-  onmouseout="this.style.backgroundColor='#003824'"
->
-  Search
-</button>
+        <button
+          type="submit"
+          class="px-6 py-3 text-white rounded-xl transition"
+          style="background-color: #003824;"
+          onmouseover="this.style.backgroundColor='#002b1c'"
+          onmouseout="this.style.backgroundColor='#003824'"
+        >
+          Search
+        </button>
       </form>
     </div>
 

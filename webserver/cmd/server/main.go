@@ -56,6 +56,7 @@ func main(){
 	mux.HandleFunc("/query", handler.Search)
 	mux.HandleFunc("/view", handler.View)
 	mux.HandleFunc("/data", handler.Files)
+	mux.HandleFunc("/upload-pdf", handler.UploadPDF)
 	
 
 	http.ListenAndServe(":8080", mux)

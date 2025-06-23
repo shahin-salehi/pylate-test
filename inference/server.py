@@ -43,11 +43,6 @@ def highlight(paragraph: str, words: list[str]):
                 (i == 0 or not highlighted[i-1].isalpha()) and 
                 (i+len(word) >= len(highlighted) or not highlighted[i+len(word)].isalpha())):
                 
-
-
-                
-
-
                 # Wrap the match in span tags
                 highlighted = (
                     highlighted[:i] +
@@ -64,9 +59,6 @@ def highlight(paragraph: str, words: list[str]):
         done.append(word)
     
     return highlighted, searchTerm
-
-
-
 
 
 class ColBERTEmbedder(embed_pb2_grpc.EmbedderServicer):
