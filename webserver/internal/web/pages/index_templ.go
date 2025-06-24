@@ -10,7 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "shahin/webserver/internal/web/components"
 
-func Index() templ.Component {
+func Index(options []string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -47,7 +47,43 @@ func Index() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"w-full max-w-3xl mt-12 text-center\"><h1 class=\"flex items-center justify-center gap-3 text-4xl font-bold mb-4\">Shahin <img src=\"/static/falcon.svg\" alt=\"Falcon\" class=\"w-10 h-10 object-contain\"> <span class=\"text-xs font-semibold bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full tracking-wide\">BETA</span></h1><p class=\"text-gray-600 mb-8 italic\">made by aiops.</p><form class=\"flex items-center justify-center gap-2\" onsubmit=\"event.preventDefault(); search();\"><select id=\"categorySelect\" class=\"px-4 py-3 rounded-xl border shadow-sm focus:outline-none transition\" style=\"border-color: #003824; box-shadow: 0 0 0 2px transparent;\" onfocus=\"this.style.boxShadow='0 0 0 2px rgba(0,56,36,0.4)'\"><option value=\"\">All Categories</option> <option value=\"books\">Books</option> <option value=\"articles\">Articles</option> <option value=\"videos\">Videos</option> <option value=\"tools\">Tools</option></select> <input id=\"searchInput\" type=\"text\" placeholder=\"Search for something...\" class=\"w-full px-4 py-3 rounded-xl border shadow-sm focus:outline-none transition\" style=\"border-color: #003824; box-shadow: 0 0 0 2px transparent;\" onfocus=\"this.style.boxShadow='0 0 0 2px rgba(0,56,36,0.4)'\"> <button type=\"submit\" class=\"px-6 py-3 text-white rounded-xl transition\" style=\"background-color: #003824;\" onmouseover=\"this.style.backgroundColor='#002b1c'\" onmouseout=\"this.style.backgroundColor='#003824'\">Search</button></form></div><div id=\"results\" class=\"w-full max-w-3xl mt-10 space-y-4\"><!-- Search results will be injected here --></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<div class=\"w-full max-w-3xl mt-12 text-center\"><h1 class=\"flex items-center justify-center gap-3 text-4xl font-bold mb-4\">Shahin <img src=\"/static/falcon.svg\" alt=\"Falcon\" class=\"w-10 h-10 object-contain\"> <span class=\"text-xs font-semibold bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full tracking-wide\">BETA</span></h1><p class=\"text-gray-600 mb-8 italic\">made by aiops.</p><form class=\"flex items-center justify-center gap-2\" onsubmit=\"event.preventDefault(); search();\"><select id=\"categorySelect\" class=\"px-4 py-3 rounded-xl border shadow-sm focus:outline-none transition\" style=\"border-color: #003824; box-shadow: 0 0 0 2px transparent;\" onfocus=\"this.style.boxShadow='0 0 0 2px rgba(0,56,36,0.4)'\"><option value=\"\">All Categories</option> ")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		for _, option := range options {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<option value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var2 string
+			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(option)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/pages/index.templ`, Line: 32, Col: 37}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var3 string
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(option)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/pages/index.templ`, Line: 32, Col: 46}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</option>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</select> <input id=\"searchInput\" type=\"text\" placeholder=\"Search for something...\" class=\"w-full px-4 py-3 rounded-xl border shadow-sm focus:outline-none transition\" style=\"border-color: #003824; box-shadow: 0 0 0 2px transparent;\" onfocus=\"this.style.boxShadow='0 0 0 2px rgba(0,56,36,0.4)'\"> <button type=\"submit\" class=\"px-6 py-3 text-white rounded-xl transition\" style=\"background-color: #003824;\" onmouseover=\"this.style.backgroundColor='#002b1c'\" onmouseout=\"this.style.backgroundColor='#003824'\">Search</button></form></div><div id=\"results\" class=\"w-full max-w-3xl mt-10 space-y-4\"><!-- Search results will be injected here --></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -55,7 +91,7 @@ func Index() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

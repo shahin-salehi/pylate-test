@@ -1,13 +1,14 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"os"
 	"shahin/webserver/internal/db"
-	"shahin/webserver/internal/web/pages"
 	"shahin/webserver/internal/grpc"
 	"shahin/webserver/internal/handler"
+	"shahin/webserver/internal/web/pages"
 
 	"github.com/a-h/templ"
 )
@@ -41,15 +42,24 @@ func main(){
 		slog.Error("init handler returned error", slog.Any("error", err))
 		os.Exit(1)
 	}
+	
+	// get index categories
+	categories, err := pool.GetCategories(context.Background())
+	if err != nil {
+		slog.Error("categories init returned error, shutting down", slog.Any("error", err))
+		os.Exit(1)
+	}
 
 	mux := http.NewServeMux()
 	// serve static files
 	fs := http.FileServer(http.Dir("../../static"))
 	fsPublic := http.FileServer(http.Dir("../../public"))
+	fsPrivate := http.FileServer(http.Dir("./uploads"))
 	mux.Handle("/static/", http.StripPrefix("/static/", fs))
 	mux.Handle("/public/", http.StripPrefix("/public/", fsPublic))
+	mux.Handle("/uploads/", http.StripPrefix("/uploads/", fsPrivate))
 	//pages
-	mux.Handle("/", templ.Handler(pages.Index()))
+	mux.Handle("/", templ.Handler(pages.Index(categories)))
 	mux.Handle("/login", templ.Handler(pages.Login()))
 
 	// handlers
@@ -57,6 +67,7 @@ func main(){
 	mux.HandleFunc("/view", handler.View)
 	mux.HandleFunc("/data", handler.Files)
 	mux.HandleFunc("/upload-pdf", handler.UploadPDF)
+	mux.HandleFunc("/delete", handler.DeletePDF)
 	
 
 	http.ListenAndServe(":8080", mux)

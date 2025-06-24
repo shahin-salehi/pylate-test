@@ -1,6 +1,9 @@
 package handler
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"io"
 	"log/slog"
 	"net/http"
@@ -42,7 +45,7 @@ func (h *Handler) Search(w http.ResponseWriter, r *http.Request)  {
 	category := r.Header.Get(categoryHeader)
 	slog.Info("header", slog.Any("category", category))
 	
-	matches, err := h.KooroshClient.Search(query)
+	matches, err := h.KooroshClient.Search(query, category)
 	if err != nil {
 		slog.Error("koorosh search returned error from handler", slog.Any("error", err))
 		http.Error(w, "something went wrong", http.StatusInternalServerError)
@@ -95,6 +98,7 @@ func (h *Handler) UploadPDF(w http.ResponseWriter, r *http.Request){
 		http.Error(w, "unable to parse form", http.StatusBadRequest)
 		return
 	}
+	category := r.MultipartForm.Value["tag"][0]
 	
 	files := r.MultipartForm.File["files"]
 	for _, fileHeader := range files {
@@ -137,31 +141,97 @@ func (h *Handler) UploadPDF(w http.ResponseWriter, r *http.Request){
 			return
 		}
 
-		// insert to db
-		
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("document(s) uploaded"))
+		/*
+
+		  WARNING THIS WILL CRASH OUR ENDPOINT IF OVERWHELMED
+
+		*/
+
+
+		// Build PDF URL (assuming your server hosts /uploads/)
+		pdfURL := fmt.Sprintf("http://localhost:8080/uploads/%s", fn)
+
+		// JSON body for FastAPI
+		payload := map[string]string{
+			"url":      pdfURL,
+			"filename": fileHeader.Filename,
+			"category": category, // or any category logic you have
+		}
+
+		jsonData, err := json.Marshal(payload)
+		if err != nil {
+			slog.Error("Failed to marshal JSON", slog.Any("error", err))
+			http.Error(w, "internal error", http.StatusInternalServerError)
+			return
+		}
+
+		// Send to FastAPI
+		resp, err := http.Post("http://localhost:8000/upload-pdf", "application/json", bytes.NewBuffer(jsonData))
+		if err != nil {
+			slog.Error("Failed to contact FastAPI", slog.Any("error",err))
+			http.Error(w, "error contacting indexing service", http.StatusBadGateway)
+			return
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusAccepted {
+			body, _ := io.ReadAll(resp.Body)
+			msg := fmt.Sprintf("FastAPI returned status %d: %s\n", resp.StatusCode, string(body))
+			slog.Error("bad status", slog.Any("error", msg))
+			http.Error(w, "indexing service error", http.StatusBadGateway)
+			return
+		}
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	
+		
+	
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("document(s) uploaded"))
 }
+
+
+
+
+func (h *Handler) DeletePDF(w http.ResponseWriter, r *http.Request){
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	} 
+	
+	payload := new(types.DeleteRequest)
+	defer r.Body.Close()
+	err := json.NewDecoder(r.Body).Decode(&payload)
+	if err != nil{
+		slog.Error("failed to decode payload body", slog.Any("error", err))
+		http.Error(w, "failed to decode payload", http.StatusUnprocessableEntity)
+		return
+	}
+	
+	//dleete
+	err = h.db.DeleteFile(r.Context(), payload.ID)
+	if err != nil {
+		slog.Error("db returned error for delete file")
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	
+	//ok
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"server": "file deleted"`))
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

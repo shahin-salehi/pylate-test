@@ -2,7 +2,7 @@ package pages
 
 import "shahin/webserver/internal/web/components"
 
-templ Index() {
+templ Index(options []string) {
 <!DOCTYPE html>
 <html lang="en">
 
@@ -28,10 +28,9 @@ templ Index() {
             onfocus="this.style.boxShadow='0 0 0 2px rgba(0,56,36,0.4)'"
           >
             <option value="">All Categories</option>
-            <option value="books">Books</option>
-            <option value="articles">Articles</option>
-            <option value="videos">Videos</option>
-            <option value="tools">Tools</option>
+            for _, option := range options {
+                <option value={option}>{option}</option>
+            }
         </select>
         <input
           id="searchInput"

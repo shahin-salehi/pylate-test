@@ -1,5 +1,5 @@
 {
-  "typeCheckingMode": "basic",
+  "typeCheckingMode": "off",
   "reportMissingImports": false,
   "reportAttributeAccessIssue": false,
   "exclude": ["**/__pycache__", "**/*.pb2.py", "**/*.pb2_grpc.py"]

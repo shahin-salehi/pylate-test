@@ -24,6 +24,7 @@ const (
 type EmbedRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Text          string                 `protobuf:"bytes,1,opt,name=text,proto3" json:"text,omitempty"`
+	Category      string                 `protobuf:"bytes,2,opt,name=category,proto3" json:"category,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -61,6 +62,13 @@ func (*EmbedRequest) Descriptor() ([]byte, []int) {
 func (x *EmbedRequest) GetText() string {
 	if x != nil {
 		return x.Text
+	}
+	return ""
+}
+
+func (x *EmbedRequest) GetCategory() string {
+	if x != nil {
+		return x.Category
 	}
 	return ""
 }
@@ -213,9 +221,10 @@ var File_embed_proto protoreflect.FileDescriptor
 
 const file_embed_proto_rawDesc = "" +
 	"\n" +
-	"\vembed.proto\x12\x05embed\"\"\n" +
+	"\vembed.proto\x12\x05embed\">\n" +
 	"\fEmbedRequest\x12\x12\n" +
-	"\x04text\x18\x01 \x01(\tR\x04text\"\xce\x01\n" +
+	"\x04text\x18\x01 \x01(\tR\x04text\x12\x1a\n" +
+	"\bcategory\x18\x02 \x01(\tR\bcategory\"\xce\x01\n" +
 	"\x05Match\x12\x1a\n" +
 	"\bfilename\x18\x01 \x01(\tR\bfilename\x12\x1f\n" +
 	"\vpage_number\x18\x02 \x01(\x05R\n" +

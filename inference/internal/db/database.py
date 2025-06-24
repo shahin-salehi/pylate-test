@@ -112,33 +112,40 @@ class Database:
             self.conn.rollback()
             return -1, False
             
-    def search(self, query: str, embedder: Embedder, top_k: int = 10) -> Tuple[list[dict], list]:
+    def search(self, query: str, embedder: Embedder, top_k: int = 10, category: str = "") -> Tuple[list[dict], list]:
         try:
-            query_embeddings = embedder.Embed(query)  # Already JSON-safe list of list[float]
+            query_embeddings = embedder.Embed(query)
 
-           
-            result = self.conn.execute(
-                    """
-                        SELECT 
-                          pdfs.filename,
-                          pdf_chunks.page_number,
-                          pdf_chunks.category,
-                          pdf_chunks.content,
-                          pdf_table_html.html,
-                          max_sim(embeddings, %s) AS max_sim
-                        FROM pdf_chunks
-                        JOIN pdfs ON pdfs.id = pdf_chunks.pdf_id
-                        LEFT JOIN pdf_table_html ON pdf_table_html.chunk_id = pdf_chunks.id
-                        ORDER BY max_sim DESC
-                        LIMIT 10
-                    """,
-                (query_embeddings,)
-            ).fetchall()
+            sql = """
+                SELECT 
+                  pdfs.filename,
+                  pdf_chunks.page_number,
+                  pdf_chunks.category,
+                  pdf_chunks.content,
+                  pdf_table_html.html,
+                  max_sim(embeddings, %s) AS max_sim
+                FROM pdf_chunks
+                JOIN pdfs ON pdfs.id = pdf_chunks.pdf_id
+                LEFT JOIN pdf_table_html ON pdf_table_html.chunk_id = pdf_chunks.id
+            """
+
+            params = [query_embeddings]
+
+            # Add category filter only if provided
+            if category:
+                sql += " WHERE pdf_chunks.category = %s"
+                params.append(category)
+
+            sql += """
+                ORDER BY max_sim DESC
+                LIMIT %s
+            """
+            params.append(top_k)
+
+            result = self.conn.execute(sql, tuple(params)).fetchall()
 
             return result, query_embeddings
 
         except Exception as e:
             logger.error(f"Search failed: {e}")
             return [], []
-
-

@@ -10,6 +10,7 @@ service Embedder {
 
 message EmbedRequest {
   string text = 1;
+  string category = 2;
 }
 
 message Match {

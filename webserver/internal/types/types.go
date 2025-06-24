@@ -24,3 +24,7 @@ type File struct{
 	Filename string `json:"filename"`
 	UploadedAt time.Time `json:"uploaded_at" db:"uploaded_at"`
 }
+
+type DeleteRequest struct {
+	ID int64 `json:"id"`
+}

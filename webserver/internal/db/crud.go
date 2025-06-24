@@ -11,6 +11,8 @@ import (
 
 type Crud interface{
 	ReadFiles(ctx context.Context) ([]types.File, error)
+	DeleteFile(ctx context.Context, id int64) error
+	GetCategories(ctx context.Context) ([]string, error)
 }
 
 
@@ -20,9 +22,9 @@ type crud struct{
 
 func (c *crud) ReadFiles(ctx context.Context) ([]types.File, error){
 	// change to args email + group as $1 $2 then append i .Query ... arguments
-	sql_stmt := `SELECT * FROM read_files('shahin@example.com', 1)`
+	sqlStmt := `SELECT * FROM read_files('shahin@example.com', 1)`
 
-	rows, err := c.Conn.Query(ctx, sql_stmt)
+	rows, err := c.Conn.Query(ctx, sqlStmt)
 	if err != nil {
 		slog.Error("failed to execute query ", slog.Any("function", "ReadFiles"), slog.Any("error", err))
 		return nil, err
@@ -36,4 +38,49 @@ func (c *crud) ReadFiles(ctx context.Context) ([]types.File, error){
 
 	return structuredRows, nil
 	
+}
+
+func (c *crud) DeleteFile(ctx context.Context, id int64) error {
+	sqlStmt := `DELETE FROM pdfs WHERE id=$1`
+	
+	_, err := c.Conn.Exec(ctx, sqlStmt, id)
+	
+	if err != nil{
+		slog.Error("failed to delete pdf", slog.Any("error", err))
+		return err
+	}
+	
+	return nil 
+
+}
+
+func (c *crud) GetCategories(ctx context.Context) ([]string, error){
+	sqlStmt := `SELECT DISTINCT category FROM pdf_chunks WHERE category IS NOT NULL` 
+
+	rows, err := c.Conn.Query(ctx, sqlStmt)
+	if err!= nil {
+		slog.Error("failed to execute query ", slog.Any("function", "GetCategories"), slog.Any("error", err))
+		return nil, err 
+	}
+	
+	defer rows.Close()
+
+	var categories []string
+	for rows.Next() {
+		var category string
+		if err := rows.Scan(&category); err != nil {
+			slog.Error("Error in scan", slog.Any("error", err))
+			return nil, err
+		}
+		categories = append(categories, category)
+	}
+
+	if rows.Err() != nil {
+		slog.Error("rows contain errors", slog.Any("error",err))
+		return nil, err
+	}
+
+	return categories, nil
+
+
 }

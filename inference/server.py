@@ -69,7 +69,7 @@ class ColBERTEmbedder(embed_pb2_grpc.EmbedderServicer):
 
     def Embed(self, request, context):
 
-        l, query_embeddings = self.db.search(query=request.text, embedder=self.embedder)
+        l, query_embeddings = self.db.search(query=request.text, embedder=self.embedder, category=request.category)
 
         matches = []
         for row in l:
@@ -104,30 +104,6 @@ def serve():
         logger.error("ping test failed, shutting down.")
         sys.exit(1)
 
-    # init parser
-    parse = Parse(embedder)
-
-    
-    """
-    ## parse test
-    data, ok = parse.pdf("internal/parser/docs/Q125_Quarterly_report.pdf", "reports")
-    if ok:
-        logger.info("pdf parsed succesfully.")
-    else:
-        logger.error("Failed to parse PDF.")
-        sys.exit(1)
-
-    ## insert test
-
-    resp, ok = db.insert_pdf(data)
-    if not ok:
-        logger.error("I just shitted my pants, ong")
-        sys.exit(1)
-    else:
-        logger.info(f"pdf inserted id: {resp} ")
-    
-
-    """
     # workers python threads not true parallel
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=4))
     embed_pb2_grpc.add_EmbedderServicer_to_server(

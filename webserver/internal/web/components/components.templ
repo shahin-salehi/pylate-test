@@ -2,6 +2,7 @@ package components
 
 import "shahin/webserver/internal/types"
 import "net/url" 
+
 templ Head(title string){
     
     <head>
@@ -97,7 +98,7 @@ templ Files(files []types.File) {
                         Uploaded {file.UploadedAt.Format("Jan 2, 2006 at 15:04")}
                     </div>
                 </div>
-                <form method="POST" action="/delete" class="ml-4">
+                <form method="POST"  class="ml-4 delete-form" data-id={file.PdfID}>
                     <input type="hidden" name="filename" value={file.Filename} />
                     <button type="submit"
                         class="text-sm text-white bg-red-600 hover:bg-red-700 px-3 py-1 rounded transition">
