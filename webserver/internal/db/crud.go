@@ -10,9 +10,9 @@ import (
 )
 
 type Crud interface{
-	ReadFiles(ctx context.Context) ([]types.File, error)
-	DeleteFile(ctx context.Context, id int64) error
-	GetCategories(ctx context.Context) ([]string, error)
+	ReadFiles(ctx context.Context, groupID int64) ([]types.File, error)
+	DeleteFile(ctx context.Context, ID int64, groupID int64) error
+	GetCategories(ctx context.Context, groupID int64) ([]string, error)
 	GetUserByEmail(ctx context.Context, email string) (*types.User, error)
 	RegisterUser(ctx context.Context, user types.User) (int64, error)
 	GetUserGroup(ctx context.Context, userID int64 ) (int64, error) 
@@ -23,12 +23,12 @@ type crud struct{
 	Conn *pgxpool.Pool
 }
 
-func (c *crud) ReadFiles(ctx context.Context) ([]types.File, error){
+func (c *crud) ReadFiles(ctx context.Context, groupID int64) ([]types.File, error){
 	// change to args email + group as $1 $2 then append i .Query ... arguments
 	// this is ultra stupid
-	sqlStmt := `SELECT * FROM read_files('tester@example.com', 2)`
+	sqlStmt := `SELECT * FROM read_files($1)`
 
-	rows, err := c.Conn.Query(ctx, sqlStmt)
+	rows, err := c.Conn.Query(ctx, sqlStmt, groupID)
 	if err != nil {
 		slog.Error("failed to execute query ", slog.Any("function", "ReadFiles"), slog.Any("error", err))
 		return nil, err
@@ -44,10 +44,10 @@ func (c *crud) ReadFiles(ctx context.Context) ([]types.File, error){
 	
 }
 
-func (c *crud) DeleteFile(ctx context.Context, id int64) error {
-	sqlStmt := `DELETE FROM pdfs WHERE id=$1`
+func (c *crud) DeleteFile(ctx context.Context, ID int64, groupID int64) error {
+	sqlStmt := `DELETE FROM pdfs WHERE id=$1 AND owner=$2`
 	
-	_, err := c.Conn.Exec(ctx, sqlStmt, id)
+	_, err := c.Conn.Exec(ctx, sqlStmt, ID, groupID)
 	
 	if err != nil{
 		slog.Error("failed to delete pdf", slog.Any("error", err))
@@ -58,10 +58,16 @@ func (c *crud) DeleteFile(ctx context.Context, id int64) error {
 
 }
 
-func (c *crud) GetCategories(ctx context.Context) ([]string, error){
-	sqlStmt := `SELECT DISTINCT category FROM pdf_chunks WHERE category IS NOT NULL` 
+func (c *crud) GetCategories(ctx context.Context, groupID int64) ([]string, error){
+	sqlStmt := `
+		SELECT DISTINCT category
+		FROM pdf_chunks
+		JOIN pdfs ON pdf_chunks.pdf_id = pdfs.id
+		WHERE pdfs.owner = $1 AND category IS NOT NULL;
+	`
 
-	rows, err := c.Conn.Query(ctx, sqlStmt)
+
+	rows, err := c.Conn.Query(ctx, sqlStmt, groupID)
 	if err!= nil {
 		slog.Error("failed to execute query ", slog.Any("function", "GetCategories"), slog.Any("error", err))
 		return nil, err 
@@ -86,5 +92,13 @@ func (c *crud) GetCategories(ctx context.Context) ([]string, error){
 
 	return categories, nil
 
+
+}
+
+
+func NewCrud(pool *pgxpool.Pool) *crud{
+	return &crud{
+		Conn: pool,
+	}
 
 }

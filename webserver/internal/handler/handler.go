@@ -53,9 +53,19 @@ func (h *Handler) View(w http.ResponseWriter, r *http.Request){
 
 
 func (h *Handler) Files(w http.ResponseWriter, r *http.Request){
+	// get group
+	// put this in a shared variable at this point
+	groupID := r.Context().Value(types.ContextGroup)
+	slog.Info("groupid", slog.Any("value", groupID))
+
+	gid, ok := groupID.(int64)
+	if !ok {
+		slog.Error("big error groupid type assert")
+		slog.Info("here it is", slog.Any("groupID", groupID))
+	}
 	
 	// get user Files
-	files, err := h.db.ReadFiles(r.Context())
+	files, err := h.db.ReadFiles(r.Context(), gid)
 	if err != nil{
 		slog.Error("db failed to read files")
 		http.Error(w, "internal server error", http.StatusInternalServerError)
@@ -136,7 +146,7 @@ func (h *Handler) UploadPDF(w http.ResponseWriter, r *http.Request){
 		}
 
 		// Build PDF URL (assuming your server hosts )
-		pdfURL := fmt.Sprintf("http://localhost:8080/%s/%s", VolumePath, fn)
+		pdfURL := fmt.Sprintf("http://localhost:8080%s/%s", VolumePath, fn)
 
 		// JSON body for FastAPI
 		pdf := types.NewPDF{
@@ -195,9 +205,19 @@ func (h *Handler) DeletePDF(w http.ResponseWriter, r *http.Request){
 		http.Error(w, "failed to decode payload", http.StatusUnprocessableEntity)
 		return
 	}
+
+	// get group
+	groupID := r.Context().Value(types.ContextGroup)
+	slog.Info("groupid", slog.Any("value", groupID))
+
+	gid, ok := groupID.(int64)
+	if !ok {
+		slog.Error("big error groupid type assert")
+		slog.Info("here it is", slog.Any("groupID", groupID))
+	}
 	
 	//dleete
-	err = h.db.DeleteFile(r.Context(), payload.ID)
+	err = h.db.DeleteFile(r.Context(), payload.ID, gid)
 	if err != nil {
 		slog.Error("db returned error for delete file")
 		http.Error(w, "internal server error", http.StatusInternalServerError)

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"log/slog"
 	"net/http"
 	"os"
@@ -26,8 +25,10 @@ func main(){
 		os.Exit(1)
 	}
 
+	crud := db.NewCrud(pool)
+
 	// init session store
-	sess, err := session.InitStore(pool)
+	sess, err := session.InitStore(crud)
 	if err != nil{
 		slog.Error("failed to init session store, shutting down.")
 		os.Exit(1)
@@ -42,34 +43,26 @@ func main(){
 	defer client.Close()
 
 
-	defer pool.Conn.Close()
+	defer pool.Close()
 
 	//init handler 
-	handler, err := handler.New(client, pool, sess)
+	handler, err := handler.New(client, crud, sess)
 	if err != nil{
 		slog.Error("init handler returned error", slog.Any("error", err))
 		os.Exit(1)
 	}
-	
-	// get index categories
-	categories, err := pool.GetCategories(context.Background())
-	if err != nil {
-		slog.Error("categories init returned error, shutting down", slog.Any("error", err))
-		os.Exit(1)
-	}
-
 	mux := http.NewServeMux()
 
 	// serve static files
 	fs := http.FileServer(http.Dir("./static"))
 	fsPublic := http.FileServer(http.Dir("./public"))
-	fsPrivate := http.FileServer(http.Dir("./uploads"))
+	fsPrivate := http.FileServer(http.Dir("./files"))
 	mux.Handle("/static/", http.StripPrefix("/static/", fs))
 	mux.Handle("/public/", http.StripPrefix("/public/", fsPublic))
-	mux.Handle("/uploads/", http.StripPrefix("/uploads/", fsPrivate))
+	mux.Handle("/files/", http.StripPrefix("/files/", fsPrivate))
 
 	//pages testers
-	mux.Handle("/", sess.ValidateUserID(templ.Handler(pages.Index(categories))))
+	mux.Handle("/", sess.Protect(handler.Index))
 	mux.Handle("/login", templ.Handler(pages.Login()))
 
 	// admin pages

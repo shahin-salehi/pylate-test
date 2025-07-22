@@ -22,32 +22,18 @@ $$ LANGUAGE SQL;
 
 
 CREATE OR REPLACE FUNCTION read_files(
-    user_email TEXT,
-    selected_group_id BIGINT
+    group_id BIGINT
 )
 RETURNS TABLE(
     pdf_id BIGINT,
     filename TEXT,
     uploaded_at TIMESTAMPTZ
 ) AS $$
-
-
 BEGIN
-    -- Check if the user is a member of the selected group
-    IF NOT EXISTS (
-        SELECT 1
-        FROM users u
-        JOIN user_to_group ug ON ug.user_id = u.id
-        WHERE u.email = user_email AND ug.group_id = selected_group_id
-    ) THEN
-        RAISE EXCEPTION 'User with email % does not belong to group %', user_email, selected_group_id;
-    END IF;
-
-    -- Return PDFs owned by the selected group
     RETURN QUERY
     SELECT p.id, p.filename, p.uploaded_at
     FROM pdfs p
-    WHERE p.owner = selected_group_id
+    WHERE p.owner = group_id
     ORDER BY p.uploaded_at DESC;
 END;
 $$ LANGUAGE plpgsql;
