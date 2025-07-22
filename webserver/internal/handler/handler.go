@@ -11,51 +11,26 @@ import (
 	"path/filepath"
 	"shahin/webserver/internal/db"
 	"shahin/webserver/internal/grpc"
+	"shahin/webserver/internal/session"
 	"shahin/webserver/internal/types"
-	"shahin/webserver/internal/web/components"
 	"shahin/webserver/internal/web/pages"
 	"strings"
 
 	"github.com/google/uuid"
 )
-
-const DiskPath = "/files"
+const VolumePath = "/files"
 
 type Handler struct{
 	KooroshClient *koorosh.Client
 	db db.Crud
+	session *session.Session
 }
 
-func New(client *koorosh.Client, db db.Crud)(*Handler,error){
-	return &Handler{KooroshClient: client, db: db}, nil
+func New(client *koorosh.Client, db db.Crud, sess *session.Session)(*Handler,error){
+	return &Handler{KooroshClient: client, db: db, session: sess}, nil
 }
 
-func (h *Handler) Search(w http.ResponseWriter, r *http.Request)  {
 
-	const headerKey = "query"
-	const categoryHeader = "category"
-	//get request check method etc
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	// get header query
-	query := r.Header.Get(headerKey)
-	category := r.Header.Get(categoryHeader)
-	slog.Info("header", slog.Any("category", category))
-	
-	matches, err := h.KooroshClient.Search(query, category)
-	if err != nil {
-		slog.Error("koorosh search returned error from handler", slog.Any("error", err))
-		http.Error(w, "something went wrong", http.StatusInternalServerError)
-		return
-	}
-
-
-	// return results
-	components.Results(matches).Render(r.Context(), w)
-}
 	
 func (h *Handler) View(w http.ResponseWriter, r *http.Request){
 	if err := r.ParseForm(); err != nil {
@@ -92,6 +67,11 @@ func (h *Handler) Files(w http.ResponseWriter, r *http.Request){
 }
 
 
+/*
+  UploadPDF This function is central.
+  it dictates where files go in prod/helm/cloud
+  this will need to change first to persistant storage
+*/
 func (h *Handler) UploadPDF(w http.ResponseWriter, r *http.Request){
 	err := r.ParseMultipartForm(32 << 20) // 32MB 2^20
 	if err != nil{
@@ -123,7 +103,8 @@ func (h *Handler) UploadPDF(w http.ResponseWriter, r *http.Request){
 		id  := uuid.New()
 		fn := id.String() + strings.ToLower(ext)
 
-		dstPath := filepath.Join("uploads", fn)
+
+		dstPath := filepath.Join("./"+VolumePath+"/", fn)
 		
 		// write
 		dst, err := os.Create(dstPath)
@@ -146,19 +127,26 @@ func (h *Handler) UploadPDF(w http.ResponseWriter, r *http.Request){
 		  WARNING THIS WILL CRASH OUR ENDPOINT IF OVERWHELMED
 
 		*/
+		groupID := r.Context().Value(types.ContextGroup)
 
-
-		// Build PDF URL (assuming your server hosts /uploads/)
-		pdfURL := fmt.Sprintf("http://localhost:8080/uploads/%s", fn)
-
-		// JSON body for FastAPI
-		payload := map[string]string{
-			"url":      pdfURL,
-			"filename": fileHeader.Filename,
-			"category": category, // or any category logic you have
+		gid, ok := groupID.(int64)
+		if !ok {
+			slog.Error("big error groupid type assert", slog.Any("function", "upload-pdf"))
+			slog.Info("here it is", slog.Any("groupID", groupID))
 		}
 
-		jsonData, err := json.Marshal(payload)
+		// Build PDF URL (assuming your server hosts )
+		pdfURL := fmt.Sprintf("http://localhost:8080/%s/%s", VolumePath, fn)
+
+		// JSON body for FastAPI
+		pdf := types.NewPDF{
+			Url: pdfURL,
+			Filename: fileHeader.Filename,
+			Category: category,
+			Owner: gid,
+		}
+
+		jsonData, err := json.Marshal(pdf)
 		if err != nil {
 			slog.Error("Failed to marshal JSON", slog.Any("error", err))
 			http.Error(w, "internal error", http.StatusInternalServerError)
@@ -192,6 +180,7 @@ func (h *Handler) UploadPDF(w http.ResponseWriter, r *http.Request){
 
 
 
+// doesnt actually delete from disk though
 func (h *Handler) DeletePDF(w http.ResponseWriter, r *http.Request){
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -220,17 +209,6 @@ func (h *Handler) DeletePDF(w http.ResponseWriter, r *http.Request){
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"server": "file deleted"`))
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -28,3 +28,30 @@ type File struct{
 type DeleteRequest struct {
 	ID int64 `json:"id"`
 }
+
+type LoginRequest struct {
+	Email string `json:"email"`
+	Password string `json:"password"`
+}
+
+type User struct {
+	ID int64 `db:"id"`
+	Username string `json:"username"`
+	Email string `json:"email"`
+	PasswordHash string `db:"password_hash" json:"password_hash"`
+	CreatedAt time.Time `db:"created_at" json:"created_at"`
+}
+
+type Key string
+
+const (
+	ContextUser  Key = "user_id"
+	ContextGroup Key = "group_id"
+)
+
+type NewPDF struct{
+	Url string `json:"url"`
+	Filename string `json:"filename"`
+	Category string `json:"category"`
+	Owner int64 `json:"owner"`
+}

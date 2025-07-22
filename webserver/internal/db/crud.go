@@ -13,6 +13,9 @@ type Crud interface{
 	ReadFiles(ctx context.Context) ([]types.File, error)
 	DeleteFile(ctx context.Context, id int64) error
 	GetCategories(ctx context.Context) ([]string, error)
+	GetUserByEmail(ctx context.Context, email string) (*types.User, error)
+	RegisterUser(ctx context.Context, user types.User) (int64, error)
+	GetUserGroup(ctx context.Context, userID int64 ) (int64, error) 
 }
 
 
@@ -22,7 +25,8 @@ type crud struct{
 
 func (c *crud) ReadFiles(ctx context.Context) ([]types.File, error){
 	// change to args email + group as $1 $2 then append i .Query ... arguments
-	sqlStmt := `SELECT * FROM read_files('shahin@example.com', 1)`
+	// this is ultra stupid
+	sqlStmt := `SELECT * FROM read_files('tester@example.com', 2)`
 
 	rows, err := c.Conn.Query(ctx, sqlStmt)
 	if err != nil {

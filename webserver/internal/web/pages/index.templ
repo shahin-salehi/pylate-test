@@ -7,7 +7,7 @@ templ Index(options []string) {
 <html lang="en">
 
   @components.Head("shahin")
-  <body class="bg-gray-50 text-gray-900 font-sans min-h-screen flex flex-col items-center ">
+  <body class="bg-gradient-to-br from-gray-50 to-gray-100 text-gray-900 font-sans min-h-screen flex flex-col items-center ">
   @components.Header()
     <div class="w-full max-w-3xl mt-12 text-center">
       <h1 class="flex items-center justify-center gap-3 text-4xl font-bold mb-4">
@@ -23,7 +23,7 @@ templ Index(options []string) {
       <form class="flex items-center justify-center gap-2" onsubmit="event.preventDefault(); search();">
         <select
             id="categorySelect"
-            class="px-4 py-3 rounded-xl border shadow-sm focus:outline-none transition"
+            class="bg-white px-4 py-3 rounded-xl border shadow-sm focus:outline-none transition"
             style="border-color: #003824; box-shadow: 0 0 0 2px transparent;"
             onfocus="this.style.boxShadow='0 0 0 2px rgba(0,56,36,0.4)'"
           >
@@ -57,7 +57,7 @@ templ Index(options []string) {
       <!-- Search results will be injected here -->
     </div>
 
-    @components.Footer()
+    @components.Footer("/static/js/home/script.js")
   </body>
 </html>
 }

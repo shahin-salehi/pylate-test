@@ -27,11 +27,11 @@ func New(address string)(*Client, error){
 		client: pb.NewEmbedderClient(conn),
 	}, nil
 }
-func (c *Client) Search(query string, category string) ([]types.Match, error){
+func (c *Client) Search(groupID int64, query string, category string) ([]types.Match, error){
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	
-	resp, err := c.client.Embed(ctx, &pb.EmbedRequest{Text: query, Category: category})
+
+	resp, err := c.client.Embed(ctx, &pb.EmbedRequest{Group: groupID, Text: query, Category: category})
 	if err != nil {
 		return nil, err
 	}

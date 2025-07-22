@@ -25,6 +25,7 @@ type EmbedRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Text          string                 `protobuf:"bytes,1,opt,name=text,proto3" json:"text,omitempty"`
 	Category      string                 `protobuf:"bytes,2,opt,name=category,proto3" json:"category,omitempty"`
+	Group         int64                  `protobuf:"varint,3,opt,name=group,proto3" json:"group,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -71,6 +72,13 @@ func (x *EmbedRequest) GetCategory() string {
 		return x.Category
 	}
 	return ""
+}
+
+func (x *EmbedRequest) GetGroup() int64 {
+	if x != nil {
+		return x.Group
+	}
+	return 0
 }
 
 type Match struct {
@@ -221,10 +229,11 @@ var File_embed_proto protoreflect.FileDescriptor
 
 const file_embed_proto_rawDesc = "" +
 	"\n" +
-	"\vembed.proto\x12\x05embed\">\n" +
+	"\vembed.proto\x12\x05embed\"T\n" +
 	"\fEmbedRequest\x12\x12\n" +
 	"\x04text\x18\x01 \x01(\tR\x04text\x12\x1a\n" +
-	"\bcategory\x18\x02 \x01(\tR\bcategory\"\xce\x01\n" +
+	"\bcategory\x18\x02 \x01(\tR\bcategory\x12\x14\n" +
+	"\x05group\x18\x03 \x01(\x03R\x05group\"\xce\x01\n" +
 	"\x05Match\x12\x1a\n" +
 	"\bfilename\x18\x01 \x01(\tR\bfilename\x12\x1f\n" +
 	"\vpage_number\x18\x02 \x01(\x05R\n" +

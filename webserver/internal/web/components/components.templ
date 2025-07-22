@@ -29,7 +29,7 @@ templ Header(){
     <nav class="flex items-center gap-6 text-gray-700 text-sm font-medium">
       <a href="/" class="hover:text-blue-600 transition">Home</a>
       <a href="/data" class="hover:text-blue-600 transition">Data</a>
-      <form action="/logout" method="POST">
+      <form action="/api/logout" method="POST">
         <button type="submit" class="hover:text-red-500 transition">Logout</button>
       </form>
     </nav>
@@ -38,12 +38,12 @@ templ Header(){
 
 }
 
-templ Footer(){
+templ Footer(path string){
 
     <footer>
     <p></p>
 
-    <script src="/static/script.js"></script>
+    <script src={path}></script>
     </footer>
 }
 

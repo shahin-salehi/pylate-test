@@ -8,6 +8,7 @@ import (
 	"shahin/webserver/internal/db"
 	"shahin/webserver/internal/grpc"
 	"shahin/webserver/internal/handler"
+	"shahin/webserver/internal/session"
 	"shahin/webserver/internal/web/pages"
 
 	"github.com/a-h/templ"
@@ -25,6 +26,13 @@ func main(){
 		os.Exit(1)
 	}
 
+	// init session store
+	sess, err := session.InitStore(pool)
+	if err != nil{
+		slog.Error("failed to init session store, shutting down.")
+		os.Exit(1)
+	}
+
 	// init grpc client obj
 	client, err := koorosh.New("localhost:50051")
 	if err!= nil {
@@ -37,7 +45,7 @@ func main(){
 	defer pool.Conn.Close()
 
 	//init handler 
-	handler, err := handler.New(client, pool)
+	handler, err := handler.New(client, pool, sess)
 	if err != nil{
 		slog.Error("init handler returned error", slog.Any("error", err))
 		os.Exit(1)
@@ -51,25 +59,39 @@ func main(){
 	}
 
 	mux := http.NewServeMux()
+
 	// serve static files
-	fs := http.FileServer(http.Dir("../../static"))
-	fsPublic := http.FileServer(http.Dir("../../public"))
+	fs := http.FileServer(http.Dir("./static"))
+	fsPublic := http.FileServer(http.Dir("./public"))
 	fsPrivate := http.FileServer(http.Dir("./uploads"))
 	mux.Handle("/static/", http.StripPrefix("/static/", fs))
 	mux.Handle("/public/", http.StripPrefix("/public/", fsPublic))
 	mux.Handle("/uploads/", http.StripPrefix("/uploads/", fsPrivate))
-	//pages
-	mux.Handle("/", templ.Handler(pages.Index(categories)))
+
+	//pages testers
+	mux.Handle("/", sess.ValidateUserID(templ.Handler(pages.Index(categories))))
 	mux.Handle("/login", templ.Handler(pages.Login()))
 
+	// admin pages
+	mux.Handle("/register", templ.Handler(pages.Register()))
+
 	// handlers
-	mux.HandleFunc("/query", handler.Search)
-	mux.HandleFunc("/view", handler.View)
-	mux.HandleFunc("/data", handler.Files)
-	mux.HandleFunc("/upload-pdf", handler.UploadPDF)
-	mux.HandleFunc("/delete", handler.DeletePDF)
+	// TODO CHANGE TO /api/ 
+	mux.Handle("/query", sess.Protect(handler.Search))
+	mux.Handle("/view", sess.Protect(handler.View))
+	mux.Handle("/data", sess.Protect(handler.Files))
+	mux.Handle("/upload-pdf", sess.Protect(handler.UploadPDF))
+	mux.Handle("/delete", sess.Protect(handler.DeletePDF))
+	mux.HandleFunc("/api/login", handler.Login)
+	mux.HandleFunc("/api/logout", handler.Logout)
+	mux.Handle("/register-user", sess.Protect(handler.Signup))
+
+	slog.Info("Listening...")
 	
 
-	http.ListenAndServe(":8080", mux)
+	err = http.ListenAndServe(":8080", mux)
+	if err != nil{
+		slog.Error("why you coming fast man, sorry i crashed", slog.Any("error", err))
 
+	}
 }

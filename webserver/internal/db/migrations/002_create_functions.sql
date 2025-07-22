@@ -18,15 +18,6 @@ CREATE OR REPLACE FUNCTION max_sim(document vector[], query vector[]) RETURNS do
     SELECT SUM(max_similarity) FROM max_similarities
 $$ LANGUAGE SQL;
 
-
-
-
-
-
-
-
-
-
 -------------- read_files
 
 
@@ -60,3 +51,35 @@ BEGIN
     ORDER BY p.uploaded_at DESC;
 END;
 $$ LANGUAGE plpgsql;
+
+
+--- get user 
+CREATE OR REPLACE FUNCTION get_user_by_email(_email TEXT)
+RETURNS TABLE (
+    id BIGINT,
+    password_hash TEXT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT users.id, users.password_hash
+    FROM users
+    WHERE users.email = _email;
+END;
+$$ LANGUAGE plpgsql;
+
+
+--- register user
+CREATE OR REPLACE FUNCTION register_user(_username TEXT, _email TEXT, _password_hash TEXT)
+RETURNS BIGINT AS $$
+DECLARE
+    _id BIGINT;
+BEGIN
+    INSERT INTO users (username, email, password_hash)
+    VALUES (_username, _email, _password_hash)
+    RETURNING id INTO _id;
+
+    RETURN _id;
+END;
+$$ LANGUAGE plpgsql;
+
+

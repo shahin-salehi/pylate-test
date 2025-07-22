@@ -39,23 +39,15 @@ func Login() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<body>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<body class=\"min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-green-100\"><div class=\"w-full max-w-md bg-white shadow-2xl p-6 rounded-2xl\"><h1 class=\"text-3xl font-bold text-center mb-6\">Welcome</h1><form method=\"POST\" action=\"/login\" class=\"space-y-4\"><div><label for=\"email\" class=\"block text-sm font-medium\">Email</label> <input type=\"email\" id=\"email\" name=\"email\" placeholder=\"you@example.com\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500\"></div><div><label for=\"password\" class=\"block text-sm font-medium\">Password</label> <input type=\"password\" id=\"password\" name=\"password\" placeholder=\"••••••••\" class=\"mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500\"></div><button type=\"submit\" class=\"w-full px-6 py-3 text-white rounded-xl transition rounded-md\" style=\"background-color: #003824;\" onmouseover=\"this.style.backgroundColor='#002b1c'\" onmouseout=\"this.style.backgroundColor='#003824'\">Sign In</button><!--class=\"w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md\"--></form><p class=\"text-sm text-center text-gray-600 mt-4\">Don’t have an account? Contact <a href=\"/signup\" class=\"text-green-600 font-medium hover:underline\">AIOps</a></p></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = components.Header().Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = components.Footer("/static/js/login/script.js").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<section class=\"\"><div class=\"\"><h2>Login</h2><form action=\"#\" method=\"POST\" class=\"\" data-feedback-id=\"login-feedback\"><label for=\"email\">Email</label> <input type=\"email\" id=\"email\" name=\"email\" required> <label for=\"password\">Password</label> <input type=\"password\" id=\"password\" name=\"password\" required> <button type=\"submit\">Login</button><div id=\"login-feedback\"></div></form><div id=\"redirect-message\" style=\"margin-top: 1rem; display: none; color: green;\"></div><p class=\"note\">Don't have an account? <a href=\"/signup\">Sign up here</a>.</p></div></section>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = components.Footer().Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     username TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW()
     );
 
@@ -45,3 +46,4 @@ CREATE TABLE IF NOT EXISTS pdf_table_html (
     html TEXT NOT NULL
 );
 
+-- write call that inserts aiops by default at group 1 
