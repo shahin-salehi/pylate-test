@@ -26,14 +26,15 @@ class UrlPayload(BaseModel):
     url: HttpUrl
     category: str
     filename: str
+    owner:int
 
 
 #python time
 # add trys to all this please
 
-def parse_and_insert_pdf(path: str, filename:str, category: str, db, parse):
+def parse_and_insert_pdf(owner:int, path: str, filename:str, category: str, db, parse):
     try:
-        data, ok = parse.pdf(path, filename, category)
+        data, ok = parse.pdf(owner, path, filename, category)
         if not ok:
             logger.error("Background: Failed to parse PDF.")
             return
@@ -86,6 +87,7 @@ async def root():
 @app.post("/upload-pdf", status_code=status.HTTP_202_ACCEPTED)
 async def upload_pdf(payload: UrlPayload, background_tasks: BackgroundTasks, request: Request):
     try:
+        print("payload url", payload.url)
         # Download the PDF
         response = requests.get(payload.url, timeout=10)
         response.raise_for_status()
@@ -98,6 +100,7 @@ async def upload_pdf(payload: UrlPayload, background_tasks: BackgroundTasks, req
         # Schedule background processing
         background_tasks.add_task(
                 parse_and_insert_pdf,
+                payload.owner,
                 tmp_path,
                 payload.filename,
                 payload.category,

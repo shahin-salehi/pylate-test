@@ -9,6 +9,7 @@ service Embedder {
 message EmbedRequest {
   string text = 1;
   string category = 2;
+  int64 group = 3;
 }
 
 message Match {

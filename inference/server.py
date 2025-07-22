@@ -69,7 +69,7 @@ class ColBERTEmbedder(embed_pb2_grpc.EmbedderServicer):
 
     def Embed(self, request, context):
 
-        l, query_embeddings = self.db.search(query=request.text, embedder=self.embedder, category=request.category)
+        l, query_embeddings = self.db.search(group=request.group, query=request.text, embedder=self.embedder, category=request.category)
 
         matches = []
         for row in l:

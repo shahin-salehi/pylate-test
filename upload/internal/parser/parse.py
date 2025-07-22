@@ -19,14 +19,14 @@ class Parse:
         self.embedder = embedder
 
 
-    def pdf(self, path: str, filename:str, category: str) -> tuple[dict, bool]:
+    def pdf(self, group:int, path: str, filename:str, category: str) -> tuple[dict, bool]:
         try:
             elements = partition_pdf(filename=path, infer_table_structure=True, strategy='hi_res')
             chunks = chunk_by_title(elements)
             tables = [el for el in elements if el.category == "Table"]
 
             d = {
-                "owner": 1,  # TODO: inject real owner ID
+                "owner": group,
                 "filename": filename, 
                 "chunks": []
             }

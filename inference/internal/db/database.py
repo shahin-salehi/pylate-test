@@ -112,7 +112,7 @@ class Database:
             self.conn.rollback()
             return -1, False
             
-    def search(self, query: str, embedder: Embedder, top_k: int = 10, category: str = "") -> Tuple[list[dict], list]:
+    def search(self, group: int, query: str, embedder: Embedder, top_k: int = 10, category: str = "") -> Tuple[list[dict], list]:
         try:
             query_embeddings = embedder.Embed(query)
 
@@ -127,13 +127,12 @@ class Database:
                 FROM pdf_chunks
                 JOIN pdfs ON pdfs.id = pdf_chunks.pdf_id
                 LEFT JOIN pdf_table_html ON pdf_table_html.chunk_id = pdf_chunks.id
+                WHERE pdfs.owner = %s
             """
+            params = [query_embeddings, group]
 
-            params = [query_embeddings]
-
-            # Add category filter only if provided
             if category:
-                sql += " WHERE pdf_chunks.category = %s"
+                sql += " AND pdf_chunks.category = %s"
                 params.append(category)
 
             sql += """
@@ -143,7 +142,6 @@ class Database:
             params.append(top_k)
 
             result = self.conn.execute(sql, tuple(params)).fetchall()
-
             return result, query_embeddings
 
         except Exception as e:
