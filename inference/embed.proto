@@ -9,7 +9,7 @@ service Embedder {
 message EmbedRequest {
   string text = 1;
   string category = 2;
-  int64 group = 3;
+  int32 group = 3;
 }
 
 message Match {
@@ -21,6 +21,7 @@ message Match {
   string html = 6;
   float score = 7;
   string meta = 8;
+  string file_url = 9;
 }
 
 message EmbedResponse {

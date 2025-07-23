@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 # if we develop this further move this to its own types/models folder
 class UrlPayload(BaseModel):
-    url: HttpUrl
+    url: str
     category: str
     filename: str
     owner:int
@@ -32,9 +32,9 @@ class UrlPayload(BaseModel):
 #python time
 # add trys to all this please
 
-def parse_and_insert_pdf(owner:int, path: str, filename:str, category: str, db, parse):
+def parse_and_insert_pdf(owner:int, path: str, file_url:str, filename:str, category: str, db, parse):
     try:
-        data, ok = parse.pdf(owner, path, filename, category)
+        data, ok = parse.pdf(owner, path, file_url, filename, category)
         if not ok:
             logger.error("Background: Failed to parse PDF.")
             return
@@ -88,7 +88,7 @@ async def root():
 async def upload_pdf(payload: UrlPayload, background_tasks: BackgroundTasks, request: Request):
     try:
         print("payload url", payload.url)
-        # Download the PDF
+            # Download the PDF
         response = requests.get(payload.url, timeout=10)
         response.raise_for_status()
 
@@ -102,6 +102,7 @@ async def upload_pdf(payload: UrlPayload, background_tasks: BackgroundTasks, req
                 parse_and_insert_pdf,
                 payload.owner,
                 tmp_path,
+                payload.url,
                 payload.filename,
                 payload.category,
                 request.app.state.db,

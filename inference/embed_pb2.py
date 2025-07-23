@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0b\x65mbed.proto\x12\x05\x65mbed\"=\n\x0c\x45mbedRequest\x12\x0c\n\x04text\x18\x01 \x01(\t\x12\x10\n\x08\x63\x61tegory\x18\x02 \x01(\t\x12\r\n\x05group\x18\x03 \x01(\x03\"\x8b\x01\n\x05Match\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\x12\x13\n\x0bpage_number\x18\x02 \x01(\x05\x12\r\n\x05title\x18\x03 \x01(\t\x12\x10\n\x08\x63\x61tegory\x18\x04 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x05 \x01(\t\x12\x0c\n\x04html\x18\x06 \x01(\t\x12\r\n\x05score\x18\x07 \x01(\x02\x12\x0c\n\x04meta\x18\x08 \x01(\t\"-\n\rEmbedResponse\x12\x1c\n\x06result\x18\x01 \x03(\x0b\x32\x0c.embed.Match2>\n\x08\x45mbedder\x12\x32\n\x05\x45mbed\x12\x13.embed.EmbedRequest\x1a\x14.embed.EmbedResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0b\x65mbed.proto\x12\x05\x65mbed\"=\n\x0c\x45mbedRequest\x12\x0c\n\x04text\x18\x01 \x01(\t\x12\x10\n\x08\x63\x61tegory\x18\x02 \x01(\t\x12\r\n\x05group\x18\x03 \x01(\x05\"\x9d\x01\n\x05Match\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\x12\x13\n\x0bpage_number\x18\x02 \x01(\x05\x12\r\n\x05title\x18\x03 \x01(\t\x12\x10\n\x08\x63\x61tegory\x18\x04 \x01(\t\x12\x0f\n\x07\x63ontent\x18\x05 \x01(\t\x12\x0c\n\x04html\x18\x06 \x01(\t\x12\r\n\x05score\x18\x07 \x01(\x02\x12\x0c\n\x04meta\x18\x08 \x01(\t\x12\x10\n\x08\x66ile_url\x18\t \x01(\t\"-\n\rEmbedResponse\x12\x1c\n\x06result\x18\x01 \x03(\x0b\x32\x0c.embed.Match2>\n\x08\x45mbedder\x12\x32\n\x05\x45mbed\x12\x13.embed.EmbedRequest\x1a\x14.embed.EmbedResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -34,9 +34,9 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_EMBEDREQUEST']._serialized_start=22
   _globals['_EMBEDREQUEST']._serialized_end=83
   _globals['_MATCH']._serialized_start=86
-  _globals['_MATCH']._serialized_end=225
-  _globals['_EMBEDRESPONSE']._serialized_start=227
-  _globals['_EMBEDRESPONSE']._serialized_end=272
-  _globals['_EMBEDDER']._serialized_start=274
-  _globals['_EMBEDDER']._serialized_end=336
+  _globals['_MATCH']._serialized_end=243
+  _globals['_EMBEDRESPONSE']._serialized_start=245
+  _globals['_EMBEDRESPONSE']._serialized_end=290
+  _globals['_EMBEDDER']._serialized_start=292
+  _globals['_EMBEDDER']._serialized_end=354
 # @@protoc_insertion_point(module_scope)

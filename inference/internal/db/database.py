@@ -123,7 +123,8 @@ class Database:
                   pdf_chunks.category,
                   pdf_chunks.content,
                   pdf_table_html.html,
-                  max_sim(embeddings, %s) AS max_sim
+                  max_sim(embeddings, %s) AS max_sim,
+                  pdfs.file_url
                 FROM pdf_chunks
                 JOIN pdfs ON pdfs.id = pdf_chunks.pdf_id
                 LEFT JOIN pdf_table_html ON pdf_table_html.chunk_id = pdf_chunks.id

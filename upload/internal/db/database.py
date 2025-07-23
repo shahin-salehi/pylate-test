@@ -72,8 +72,8 @@ class Database:
             with self.conn.cursor() as c:
                 # Step 1: Insert into pdfs
                 c.execute(
-                    "INSERT INTO pdfs (owner, filename) VALUES (%s, %s) RETURNING id",
-                    (data["owner"], data["filename"])
+                    "INSERT INTO pdfs (owner, filename, file_url) VALUES (%s, %s, %s) RETURNING id",
+                    (data["owner"], data["filename"], data["file_url"])
                 )
                 pdf_id = c.fetchone()[0]
 

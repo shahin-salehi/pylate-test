@@ -88,6 +88,8 @@ class ColBERTEmbedder(embed_pb2_grpc.EmbedderServicer):
                 html=row[4] or "",
                 score=row[5],
                 meta=st,
+                file_url=row[6]
+                
                 ))
 
         return embed_pb2.EmbedResponse(result=matches)
