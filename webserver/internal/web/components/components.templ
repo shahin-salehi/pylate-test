@@ -2,6 +2,7 @@ package components
 
 import "shahin/webserver/internal/types"
 import "net/url" 
+import "log/slog"
 
 templ Head(title string){
     
@@ -54,19 +55,31 @@ templ Footer(path string){
 // <span class='bg-yellow-200 px-1'>${query}</span>
 templ Results(matches []types.Match){
     for _, match := range matches {
+        {{
+            URL, err := url.Parse(match.FileUrl)
+            if err != nil{
+                slog.Error("faild to parse url")
+                }
+
+
+        }}
+
+        
         <ul>
             <div class="bg-white p-4 rounded-xl shadow border">
                 <div class="flex justify-between items-center">
                     <div class="text-lg font-semibold">
                         <a 
                             class="text-blue-600 hover:underline"
-                            href={"/view?filename=" + url.QueryEscape(match.Filename) + "&search=" + url.QueryEscape(match.Meta)}
+                            href={"/view?filename=" + match.FileUrl + "&search=" + url.QueryEscape(match.Meta)}
+                            target="_blank"
+                            rel="noopener noreferrer"
                         >
                             {match.Title}
                         </a>
                     </div>
                     <a 
-                        href={"/static/" + url.QueryEscape(match.Filename)}
+                        href={URL.Path}
                         title="Download or view file"
                         class="text-gray-500 hover:text-gray-800"
                         target="_blank"

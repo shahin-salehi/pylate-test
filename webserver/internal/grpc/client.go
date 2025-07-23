@@ -47,6 +47,7 @@ func (c *Client) Search(groupID int64, query string, category string) ([]types.M
 			HTML: m.Html,
 			Score: m.Score,
 			Meta: m.Meta,
+			FileUrl: m.FileUrl,
 		}
 	}
 

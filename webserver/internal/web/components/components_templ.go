@@ -10,6 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "shahin/webserver/internal/types"
 import "net/url"
+import "log/slog"
 
 func Head(title string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -39,7 +40,7 @@ func Head(title string) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/components/components.templ`, Line: 13, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/components/components.templ`, Line: 14, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -110,7 +111,7 @@ func Footer(path string) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(path)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/components/components.templ`, Line: 46, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/components/components.templ`, Line: 47, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -149,27 +150,32 @@ func Results(matches []types.Match) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		for _, match := range matches {
+
+			URL, err := url.Parse(match.FileUrl)
+			if err != nil {
+				slog.Error("faild to parse url")
+			}
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<ul><div class=\"bg-white p-4 rounded-xl shadow border\"><div class=\"flex justify-between items-center\"><div class=\"text-lg font-semibold\"><a class=\"text-blue-600 hover:underline\" href=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var7 templ.SafeURL
-			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinURLErrs("/view?filename=" + url.QueryEscape(match.Filename) + "&search=" + url.QueryEscape(match.Meta))
+			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinURLErrs("/view?filename=" + match.FileUrl + "&search=" + url.QueryEscape(match.Meta))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/components/components.templ`, Line: 63, Col: 128}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/components/components.templ`, Line: 74, Col: 110}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\" target=\"_blank\" rel=\"noopener noreferrer\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(match.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/components/components.templ`, Line: 65, Col: 40}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/components/components.templ`, Line: 78, Col: 40}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -180,9 +186,9 @@ func Results(matches []types.Match) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var9 templ.SafeURL
-			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinURLErrs("/static/" + url.QueryEscape(match.Filename))
+			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinURLErrs(URL.Path)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/components/components.templ`, Line: 69, Col: 74}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/components/components.templ`, Line: 82, Col: 38}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -210,7 +216,7 @@ func Results(matches []types.Match) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(match.PageNumber)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/components/components.templ`, Line: 85, Col: 78}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/components/components.templ`, Line: 98, Col: 78}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -223,7 +229,7 @@ func Results(matches []types.Match) templ.Component {
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(match.Category)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/components/components.templ`, Line: 85, Col: 98}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/components/components.templ`, Line: 98, Col: 98}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -267,7 +273,7 @@ func Files(files []types.File) templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(file.Filename)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/components/components.templ`, Line: 96, Col: 73}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/components/components.templ`, Line: 109, Col: 73}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -280,7 +286,7 @@ func Files(files []types.File) templ.Component {
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(file.UploadedAt.Format("Jan 2, 2006 at 15:04"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/components/components.templ`, Line: 98, Col: 80}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/components/components.templ`, Line: 111, Col: 80}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -293,7 +299,7 @@ func Files(files []types.File) templ.Component {
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(file.PdfID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/components/components.templ`, Line: 101, Col: 81}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/components/components.templ`, Line: 114, Col: 81}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
@@ -306,7 +312,7 @@ func Files(files []types.File) templ.Component {
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(file.Filename)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/components/components.templ`, Line: 102, Col: 77}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/components/components.templ`, Line: 115, Col: 77}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {

@@ -50,7 +50,7 @@ const CMAP_PACKED = true;
 
 
 
-const DEFAULT_URL = '/static/' + instructions.path;
+const DEFAULT_URL = instructions.path;
 
 
 

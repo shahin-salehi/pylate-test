@@ -12,6 +12,7 @@ type Match struct {
 	HTML string
 	Score float32
 	Meta string
+	FileUrl string
 }
 
 type ViewerInstructions struct {

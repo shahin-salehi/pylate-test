@@ -91,6 +91,7 @@ type Match struct {
 	Html          string                 `protobuf:"bytes,6,opt,name=html,proto3" json:"html,omitempty"`
 	Score         float32                `protobuf:"fixed32,7,opt,name=score,proto3" json:"score,omitempty"`
 	Meta          string                 `protobuf:"bytes,8,opt,name=meta,proto3" json:"meta,omitempty"`
+	FileUrl       string                 `protobuf:"bytes,9,opt,name=file_url,json=fileUrl,proto3" json:"file_url,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -181,6 +182,13 @@ func (x *Match) GetMeta() string {
 	return ""
 }
 
+func (x *Match) GetFileUrl() string {
+	if x != nil {
+		return x.FileUrl
+	}
+	return ""
+}
+
 type EmbedResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Result        []*Match               `protobuf:"bytes,1,rep,name=result,proto3" json:"result,omitempty"`
@@ -233,7 +241,7 @@ const file_embed_proto_rawDesc = "" +
 	"\fEmbedRequest\x12\x12\n" +
 	"\x04text\x18\x01 \x01(\tR\x04text\x12\x1a\n" +
 	"\bcategory\x18\x02 \x01(\tR\bcategory\x12\x14\n" +
-	"\x05group\x18\x03 \x01(\x03R\x05group\"\xce\x01\n" +
+	"\x05group\x18\x03 \x01(\x03R\x05group\"\xe9\x01\n" +
 	"\x05Match\x12\x1a\n" +
 	"\bfilename\x18\x01 \x01(\tR\bfilename\x12\x1f\n" +
 	"\vpage_number\x18\x02 \x01(\x05R\n" +
@@ -243,7 +251,8 @@ const file_embed_proto_rawDesc = "" +
 	"\acontent\x18\x05 \x01(\tR\acontent\x12\x12\n" +
 	"\x04html\x18\x06 \x01(\tR\x04html\x12\x14\n" +
 	"\x05score\x18\a \x01(\x02R\x05score\x12\x12\n" +
-	"\x04meta\x18\b \x01(\tR\x04meta\"5\n" +
+	"\x04meta\x18\b \x01(\tR\x04meta\x12\x19\n" +
+	"\bfile_url\x18\t \x01(\tR\afileUrl\"5\n" +
 	"\rEmbedResponse\x12$\n" +
 	"\x06result\x18\x01 \x03(\v2\f.embed.MatchR\x06result2>\n" +
 	"\bEmbedder\x122\n" +
