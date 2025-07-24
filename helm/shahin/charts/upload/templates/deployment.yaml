@@ -1,0 +1,24 @@
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: upload
+spec:
+  selector:
+    matchLabels:
+      app: upload
+  template:
+    metadata:
+      labels:
+        app: upload 
+    spec:
+      containers:
+      - name: upload
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}" 
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        ports:
+        - containerPort: {{ .Values.deployment.container.port }}

@@ -99,7 +99,8 @@ def serve():
     embedder = Embedder("model/model.onnx")
 
     # init database
-    db = Database("postgres://admin:password@localhost:9876/documents")
+    # whats the connection string
+    db = Database("postgres://admin:password@database:5432/documents")
     if db.ping():
         logger.info("ping test successfull")
     else:

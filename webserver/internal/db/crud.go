@@ -16,6 +16,7 @@ type Crud interface{
 	GetUserByEmail(ctx context.Context, email string) (*types.User, error)
 	RegisterUser(ctx context.Context, user types.User) (int64, error)
 	GetUserGroup(ctx context.Context, userID int64 ) (int64, error) 
+	EnsureDefaultAdmin(ctx context.Context) error 
 }
 
 

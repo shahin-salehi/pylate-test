@@ -1,0 +1,25 @@
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inference
+spec:
+  selector:
+    matchLabels:
+      app: inference
+  template:
+    metadata:
+      labels:
+        app: inference
+    spec:
+      containers:
+      - name: inference
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}" 
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        ports:
+        - containerPort: {{ .Values.deployment.container.port }}

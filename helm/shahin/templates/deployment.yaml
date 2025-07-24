@@ -1,27 +1,45 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: webserver 
+  name: webserver
 spec:
   selector:
     matchLabels:
-      app: {{ .Values.deployment.name}}
+      app: {{ .Values.deployment.name }}
   template:
     metadata:
       labels:
         app: {{ .Values.deployment.name }}
     spec:
       containers:
-      - name: {{ .Values.deployment.name }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: IfNotPresent
-        resources:
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
-        
-        env:
-        - name: DATABASE_URL
-          value: "postgres://admin:password@database:5432/documents"
-        ports:
-        - containerPort: {{ .Values.deployment.container.port }}
+        - name: {{ .Values.deployment.name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          env:
+            - name: DATABASE_URL
+              value: "postgres://admin:password@database:5432/documents"
+          ports:
+            - containerPort: {{ .Values.deployment.container.port }}
+          volumeMounts:
+            - name: files-volume
+              mountPath: /files
+      volumes:
+        - name: files-volume
+          persistentVolumeClaim:
+            claimName: files-pvc
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: files-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

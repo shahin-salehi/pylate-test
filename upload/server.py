@@ -57,7 +57,7 @@ async def lifespan(app: FastAPI):
     try: 
         embedder = Embedder("model/model.onnx")
 
-        db = Database("postgres://admin:password@localhost:9876/documents")
+        db = Database("postgres://admin:password@database:5432/documents")
         if db.ping():
             logger.info("ping test successfull")
         else:

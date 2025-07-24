@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"shahin/webserver/internal/types"
+	"golang.org/x/crypto/bcrypt"
 )
 
 
@@ -49,4 +50,78 @@ func (c *crud) GetUserGroup(ctx context.Context, userID int64) (int64, error){
 	
 	slog.Info("user registered")
 	return groupID, nil
+}
+
+
+// EnsureDefaultAdmin creates the 'aiops' group and 'admin@local' user if they don't exist,
+// and associates them. This is for bootstrap only.
+func (c *crud) EnsureDefaultAdmin(ctx context.Context) error {
+	const (
+		AdminEmail    = "admin@example.com"
+		AdminUsername = "admin"
+		AdminPassword = "admin"
+	)
+
+	// 1. Ensure 'aiops' group exists
+	var groupID int64
+	err := c.Conn.QueryRow(ctx, `
+		INSERT INTO groups (name)
+		VALUES ('aiops')
+		ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name
+		RETURNING id;
+	`).Scan(&groupID)
+	if err != nil {
+		slog.Error("failed to ensure group aiops", slog.Any("error", err))
+		return err
+	}
+
+	// 2. Check if admin user exists
+	var userID int64
+	err = c.Conn.QueryRow(ctx, `
+		SELECT id FROM users WHERE email = $1;
+	`, AdminEmail).Scan(&userID)
+
+	if err != nil {
+		// Admin doesn't exist — insert it
+		hashed, _ := bcrypt.GenerateFromPassword([]byte(AdminPassword), bcrypt.DefaultCost)
+
+		err = c.Conn.QueryRow(ctx, `
+			INSERT INTO users (username, email, password_hash)
+			VALUES ($1, $2, $3)
+			RETURNING id;
+		`, AdminUsername, AdminEmail, string(hashed)).Scan(&userID)
+		if err != nil {
+			slog.Error("failed to insert default admin user", slog.Any("error", err))
+			return err
+		}
+		slog.Info("✅ Created default admin user", slog.String("email", AdminEmail), slog.String("password", AdminPassword))
+	} else {
+		slog.Info("✅ Default admin user already exists", slog.String("email", AdminEmail))
+	}
+
+	// 3. Link user to group
+	var exists bool
+	err = c.Conn.QueryRow(ctx, `
+		SELECT EXISTS (
+			SELECT 1 FROM user_to_group WHERE user_id = $1 AND group_id = $2
+		);
+	`, userID, groupID).Scan(&exists)
+	if err != nil {
+		slog.Error("failed to check user_to_group", slog.Any("error", err))
+		return err
+	}
+
+	if !exists {
+		_, err = c.Conn.Exec(ctx, `
+			INSERT INTO user_to_group (user_id, group_id)
+			VALUES ($1, $2);
+		`, userID, groupID)
+		if err != nil {
+			slog.Error("failed to insert user_to_group link", slog.Any("error", err))
+			return err
+		}
+		slog.Info("✅ Linked admin user to group aiops")
+	}
+
+	return nil
 }

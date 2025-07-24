@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"os"
@@ -17,7 +18,7 @@ func main(){
 	slog.Info("starting webserver...")
 	
 	// set this in deployment 
-	connectionString := "postgres://admin:password@localhost:9876/documents"   //:= os.Getenv("DATABASE_URL")
+	connectionString := "postgres://admin:password@database:5432/documents"   //:= os.Getenv("DATABASE_URL")
 	pool, err := db.NewDatabase(connectionString)
 	
 	if err != nil {
@@ -26,6 +27,14 @@ func main(){
 	}
 
 	crud := db.NewCrud(pool)
+
+	// init admin acc
+	err = crud.EnsureDefaultAdmin(context.Background())
+	if err != nil {
+		slog.Error("failed to init admin account, shutting down", slog.Any("error", err))
+		os.Exit(1)
+	}
+	
 
 	// init session store
 	sess, err := session.InitStore(crud)
