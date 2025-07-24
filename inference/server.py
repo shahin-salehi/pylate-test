@@ -8,7 +8,6 @@ import spacy
 from concurrent import futures
 from internal.colbert.embedder import Embedder
 from internal.db.database import Database
-from internal.parser.parse import Parse
 
 
 logging.basicConfig(

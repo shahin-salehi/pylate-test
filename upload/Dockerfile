@@ -3,12 +3,21 @@ FROM python:3.12-slim-bookworm
 # Set working directory
 WORKDIR /app
 
-# Install dependencies
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libmagic-dev \
+    poppler-utils \
+    tesseract-ocr \
+    libgl1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir psycopg[binary]
 
-# Copy source code
+# Copy app code
 COPY . .
 
-# Use uvicorn to serve FastAPI app (assumes app is in server.py and named `app`)
+# Run FastAPI app
 CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000"]

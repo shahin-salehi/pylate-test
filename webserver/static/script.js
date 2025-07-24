@@ -7,6 +7,7 @@ async function search() {
     resultsContainer.innerHTML = `<div class="text-gray-500 italic">Searching for "${query}"...</div>`;
 
     try {
+        // this needs to be exposed
         console.log('category', category)
         const response = await fetch('http://localhost:8080/query', {
             method: 'GET',

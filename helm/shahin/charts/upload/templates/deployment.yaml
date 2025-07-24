@@ -18,7 +18,7 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}" 
         resources:
           limits:
-            memory: "1Gi"
+            memory: "2Gi"
             cpu: "500m"
         ports:
         - containerPort: {{ .Values.deployment.container.port }}
