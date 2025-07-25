@@ -44,7 +44,7 @@ func main(){
 	}
 
 	// init grpc client obj
-	client, err := koorosh.New("localhost:50051")
+	client, err := koorosh.New("inference:50051")
 	if err!= nil {
 		slog.Error("failed to create grpc client object", slog.Any("error",err))
 		os.Exit(1)

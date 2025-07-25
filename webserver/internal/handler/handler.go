@@ -146,7 +146,7 @@ func (h *Handler) UploadPDF(w http.ResponseWriter, r *http.Request){
 		}
 
 		// Build PDF URL (assuming your server hosts )
-		pdfURL := fmt.Sprintf("http://localhost:8080%s/%s", VolumePath, fn)
+		pdfURL := fmt.Sprintf("http://website:8080%s/%s", VolumePath, fn)
 
 		// JSON body for FastAPI
 		pdf := types.NewPDF{
@@ -164,7 +164,7 @@ func (h *Handler) UploadPDF(w http.ResponseWriter, r *http.Request){
 		}
 
 		// Send to FastAPI
-		resp, err := http.Post("http://localhost:8000/upload-pdf", "application/json", bytes.NewBuffer(jsonData))
+		resp, err := http.Post("http://upload:8000/upload-pdf", "application/json", bytes.NewBuffer(jsonData))
 		if err != nil {
 			slog.Error("Failed to contact FastAPI", slog.Any("error",err))
 			http.Error(w, "error contacting indexing service", http.StatusBadGateway)
